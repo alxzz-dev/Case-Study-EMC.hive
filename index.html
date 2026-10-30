@@ -58,6 +58,10 @@
 		.game-card-info > button[data-open-game] { display: block; width: 100%; border: 0; padding: 0; background: transparent; color: #286347; text-align: left; font-weight: 700; }
 		.game-cover { width: 112px; height: 128px; display: grid; place-items: center; overflow: hidden; background: #f0f3ef; color: #778178; text-align: center; font-size: .85rem; }
 		.game-cover img { width: 100%; height: 100%; object-fit: cover; }
+		.image-open { display: block; width: 100%; padding: 0; overflow: hidden; border: 0; border-radius: inherit; background: transparent; cursor: zoom-in; }
+		.image-open:hover { transform: none; box-shadow: none; }
+		.game-card .image-open, .game-detail-cover.image-open { height: 100%; }
+		.game-card .image-open img { display: block; width: 100%; height: 100%; object-fit: cover; }
 		article img { max-width: 100%; height: auto; }
 		.game-detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 300px); gap: 1.5rem; align-items: start; }
 		.game-detail-side { display: grid; justify-items: end; gap: .85rem; }
@@ -69,8 +73,16 @@
 		.game-action-like[aria-pressed="true"] { border-color: #9c3e86; background: #9c3e86; }
 		.game-action-count { min-width: 1.2em; font-variant-numeric: tabular-nums; }
 		.game-detail-cover { width: 100%; max-height: 420px; object-fit: contain; background: #f0f3ef; }
+		.game-detail-cover.image-open { height: 360px; max-height: none; border: 1px solid #e8deee; border-radius: .85rem; }
+		.game-detail-cover.image-open img { width: 100%; height: 100%; object-fit: cover; }
 		.game-screenshots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1rem; }
-		.game-screenshots img { width: 100%; max-height: 620px; object-fit: contain; background: #f0f3ef; border-radius: .4rem; }
+		.game-screenshot { width: 100%; height: 300px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: .8rem; background: #f0f3ef; cursor: zoom-in; }
+		.game-screenshot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+		.image-lightbox { width: min(96vw, 1280px); max-width: none; max-height: 96vh; padding: 2.8rem 1rem 1rem; overflow: visible; border: 1px solid #ffffff2b; border-radius: 1rem; background: #180e21; box-shadow: 0 25px 100px #100719aa; }
+		.image-lightbox::backdrop { background: #140c1dde; -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+		.image-lightbox img { display: block; width: 100%; max-height: calc(96vh - 5rem); object-fit: contain; border-radius: .5rem; }
+		.image-lightbox figcaption { margin-top: .5rem; color: #eadff0; text-align: center; }
+		.image-lightbox-close { position: absolute; top: .5rem; right: .6rem; width: 2.2rem; height: 2.2rem; padding: 0; border: 1px solid #ffffff44; border-radius: 50%; background: #ffffff19; color: white; font-size: 1.3rem; line-height: 1; }
 		.star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: .15rem; width: max-content; }
 		.star-rating input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 		.star-rating label { display: block; color: #aab3aa; font-size: 2rem; line-height: 1; cursor: pointer; }
@@ -418,6 +430,10 @@
 			<button type="button" id="cancelGameEditor">Cancel</button>
 		</form>
 	</dialog>
+	<dialog id="imageLightbox" class="image-lightbox" aria-label="Image viewer">
+		<button type="button" class="image-lightbox-close" id="closeImageLightbox" aria-label="Close image viewer">×</button>
+		<figure><img id="lightboxImage" alt=""><figcaption id="lightboxCaption"></figcaption></figure>
+	</dialog>
 
 	<script>
 		'use strict';
@@ -566,6 +582,15 @@
 			window.scrollTo(0, 0);
 		}
 		document.addEventListener('click', event => {
+			const imageButton = event.target.closest('[data-open-image]');
+			if (imageButton) {
+				const lightbox = document.getElementById('imageLightbox');
+				document.getElementById('lightboxImage').src = imageButton.dataset.openImage;
+				document.getElementById('lightboxImage').alt = imageButton.dataset.imageAlt || 'Game image';
+				document.getElementById('lightboxCaption').textContent = imageButton.dataset.imageAlt || '';
+				lightbox.showModal();
+				return;
+			}
 			const nav = event.target.closest('[data-view]');
 			if (nav) {
 				event.preventDefault();
@@ -587,6 +612,10 @@
 				deleteGame(game.id); saveData(); renderProfile(); renderArchive();
 			}
 		});
+		document.getElementById('closeImageLightbox').addEventListener('click', () => document.getElementById('imageLightbox').close());
+		document.getElementById('imageLightbox').addEventListener('click', event => {
+			if (event.target === event.currentTarget) event.currentTarget.close();
+		});
 
 		function renderSession() {
 			const user = currentUser();
@@ -607,7 +636,7 @@
 			document.getElementById('featuredGames').innerHTML = featured.length ? featured.map(gameCard).join('') : '<p>No featured games have been published yet.</p>';
 		}
 		function gameCard(game) {
-			const image = game.cover ? `<img src="${escapeHTML(game.cover)}" alt="Cover for ${escapeHTML(game.title)}">` : '<span>Cover image</span>';
+			const image = game.cover ? `<button type="button" class="image-open" data-open-image="${escapeHTML(game.cover)}" data-image-alt="Cover for ${escapeHTML(game.title)}" aria-label="View cover image for ${escapeHTML(game.title)}"><img src="${escapeHTML(game.cover)}" alt=""></button>` : '<span>Cover image</span>';
 			const reviews = data.reviews.filter(review => review.gameId === game.id);
 			const average = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : '—';
 			const likes = (data.likes || []).filter(item => item.gameId === game.id).length;
@@ -648,7 +677,7 @@
 		function renderGameDetail() {
 			const game = byId(activeGameId); if (!game || !game.approved) { navigate('archive'); return; }
 			const team = (game.team || []).map(member => `<li>${escapeHTML(member.name)} — ${escapeHTML(member.role)}</li>`).join('') || '<li>Team details not provided.</li>';
-			const screenshots = (game.screenshots || []).map((src, index) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(game.title)} screenshot ${index + 1}">`).join('') || '<p>No screenshots added.</p>';
+			const screenshots = (game.screenshots || []).map((src, index) => `<button type="button" class="game-screenshot image-open" data-open-image="${escapeHTML(src)}" data-image-alt="${escapeHTML(game.title)} screenshot ${index + 1}" aria-label="View screenshot ${index + 1} of ${escapeHTML(game.title)}"><img src="${escapeHTML(src)}" alt=""></button>`).join('') || '<p>No screenshots added.</p>';
 			const user = currentUser(); const log = user && data.logs.find(item => item.userId === user.id && item.gameId === game.id);
 			const favorite = user && data.favorites.some(item => item.userId === user.id && item.gameId === game.id);
 			const liked = user && (data.likes || []).some(item => item.userId === user.id && item.gameId === game.id);
@@ -656,7 +685,7 @@
 			document.getElementById('gameDetailContent').innerHTML = `
 				<div class="game-detail-layout"><div><h2>${escapeHTML(game.title)}</h2>
 				<p>${escapeHTML(game.description)}</p><dl><dt>Release year</dt><dd>${escapeHTML(game.year)}</dd><dt>Genre</dt><dd>${escapeHTML(game.genre)}</dd><dt>Platform</dt><dd>${escapeHTML(game.platform)}</dd><dt>Engine</dt><dd>${escapeHTML(game.engine)}</dd></dl>
-				<h3>Team</h3><ul>${team}</ul></div><div class="game-detail-side">${user ? `<div class="game-detail-actions"><label for="diaryStatus">Diary <select id="diaryStatus"><option value="">Not logged</option><option value="Played" ${log?.status === 'Played' ? 'selected' : ''}>Played</option><option value="Want to Play" ${log?.status === 'Want to Play' ? 'selected' : ''}>Want to Play</option></select></label><button type="button" id="toggleFavorite" aria-pressed="${Boolean(favorite)}">${favorite ? '★ Saved' : '☆ Favorite'}</button><button type="button" id="toggleLike" class="game-action-like" aria-pressed="${Boolean(liked)}"><span aria-hidden="true">♥</span><span class="game-action-count">${likeCount}</span><span>${liked ? 'Liked' : 'Like'}</span></button></div>` : `<div class="game-detail-actions"><a href="login.html">Log in to like or save this game</a><span class="game-action-count">♥ ${likeCount}</span></div>`}${game.cover ? `<img class="game-detail-cover" src="${escapeHTML(game.cover)}" alt="Cover for ${escapeHTML(game.title)}">` : '<div class="game-detail-cover">[Cover image]</div>'}</div></div>
+				<h3>Team</h3><ul>${team}</ul></div><div class="game-detail-side">${user ? `<div class="game-detail-actions"><label for="diaryStatus">Diary <select id="diaryStatus"><option value="">Not logged</option><option value="Played" ${log?.status === 'Played' ? 'selected' : ''}>Played</option><option value="Want to Play" ${log?.status === 'Want to Play' ? 'selected' : ''}>Want to Play</option></select></label><button type="button" id="toggleFavorite" aria-pressed="${Boolean(favorite)}">${favorite ? '★ Saved' : '☆ Favorite'}</button><button type="button" id="toggleLike" class="game-action-like" aria-pressed="${Boolean(liked)}"><span aria-hidden="true">♥</span><span class="game-action-count">${likeCount}</span><span>${liked ? 'Liked' : 'Like'}</span></button></div>` : `<div class="game-detail-actions"><a href="login.html">Log in to like or save this game</a><span class="game-action-count">♥ ${likeCount}</span></div>`}${game.cover ? `<button type="button" class="game-detail-cover image-open" data-open-image="${escapeHTML(game.cover)}" data-image-alt="Cover for ${escapeHTML(game.title)}"><img src="${escapeHTML(game.cover)}" alt=""></button>` : '<div class="game-detail-cover">[Cover image]</div>'}</div></div>
 				<h3>Screenshots</h3><div class="game-screenshots">${screenshots}</div>
 				<p>This page documents the game; it is not playable on EMC.hive.</p>
 			`;
