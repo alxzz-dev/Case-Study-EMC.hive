@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="EMC.hive is a community archive and game diary for BSEMC student-made games.">
+	<title>EMC.hive — BSEMC Game Archive</title>
+	<style>
+		:root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #202820; background: #f5f7f4; font-synthesis: none; }
+		* { box-sizing: border-box; }
+		body { margin: 0; line-height: 1.6; }
+		a { color: #7938a6; }
+		a:hover { color: #57217f; }
+		header { padding: .8rem max(.75rem, calc((100% - 1240px) / 2)); background: #fff; border-bottom: 1px solid #dfe5df; }
+		header h1 { margin: 0; font-size: 1.6rem; letter-spacing: -.04em; }
+		header h1 a { color: inherit; text-decoration: none; }
+		header > p { margin: .15rem 0 .75rem; color: #5c675e; }
+		nav { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+		nav a, nav button { padding: .38rem .7rem; border: 1px solid #dfe5df; border-radius: .4rem; text-decoration: none; background: #fff; color: #26352b; font: inherit; }
+		nav a:hover, nav button:hover { background: #eff5ef; }
+		#sessionStatus { margin: 0 0 0 auto; padding: .45rem .8rem; color: #355b42; background: #eef5ef; border-radius: .45rem; font-size: 1rem; font-weight: 600; white-space: nowrap; }
+		main { width: min(100% - .75rem, 1320px); margin: .65rem auto; }
+		main > [data-page] { min-height: 65vh; padding: clamp(.85rem, 1.5vw, 1.15rem); background: #fff; border: 1px solid #e1e7e1; border-radius: .65rem; }
+		[hidden] { display: none !important; }
+		h2 { margin-top: 0; line-height: 1.25; letter-spacing: -.025em; }
+		h3 { margin-top: 1.8rem; }
+		p { max-width: 72ch; }
+		form { display: grid; gap: .9rem; max-width: 680px; }
+		label { display: grid; gap: .3rem; font-weight: 550; }
+		input, select, textarea, button { font: inherit; }
+		input, select, textarea { width: 100%; padding: .62rem .7rem; border: 1px solid #cbd4cb; border-radius: .35rem; background: #fff; color: inherit; }
+		input:focus, select:focus, textarea:focus { outline: 2px solid #88b49a; outline-offset: 1px; }
+		button { padding: .55rem .85rem; border: 1px solid #286347; border-radius: .35rem; background: #286347; color: #fff; cursor: pointer; }
+		button:hover { background: #1d5038; }
+		button[type="reset"], [data-back], #cancelGameEditor { background: #fff; color: #26352b; border-color: #cbd4cb; }
+		fieldset { display: grid; gap: .8rem; border: 1px solid #dfe5df; border-radius: .4rem; padding: 1rem; }
+		legend { padding: 0 .35rem; font-weight: 650; }
+		.upload-drop { display: block; padding: .8rem; border: 1px dashed #91a995; border-radius: .4rem; background: #f7faf7; color: #536458; font-weight: 400; }
+		.upload-drop.drag-over { border-color: #286347; background: #eaf3ec; }
+		.image-previews { display: flex; flex-wrap: wrap; gap: .5rem; }
+		.image-preview { display: grid; justify-items: start; gap: .3rem; }
+		.image-previews img { width: 96px; height: 96px; object-fit: cover; border: 1px solid #dfe5df; border-radius: .3rem; }
+		.image-preview button { padding: .25rem .45rem; font-size: .85rem; }
+		#featuredGames, #gameList { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+		article { padding: 1rem; border: 1px solid #e1e7e1; border-radius: .45rem; background: #fff; }
+		.game-card { display: grid; grid-template-columns: minmax(0, 1fr) 112px; align-items: center; gap: 1rem; min-height: 150px; }
+		.game-card-info { min-width: 0; }
+		.uploaded-game-card { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: .8rem; align-items: center; }
+		.uploaded-game-cover { width: 96px; height: 110px; object-fit: cover; background: #f0f3ef; }
+		.uploaded-game-placeholder { display: grid; place-items: center; color: #778178; }
+		.role-badge { display: inline-block; margin-left: .35rem; padding: .08rem .4rem; border-radius: 999px; font-size: .72em; font-weight: 700; vertical-align: middle; }
+		.role-badge-student { color: #1453b8; background: #e8f0ff; }
+		.role-badge-alumni { color: #b42318; background: #fff0ef; }
+		.role-badge-admin { color: #111; background: #e8e8e8; }
+		.role-badge-guest { color: #506052; background: #edf2ed; }
+		.owner-reply { margin: .75rem 0; padding: .7rem; border-left: 3px solid #72977c; background: #f4f8f4; }
+		.owner-reply-form { margin: .6rem 0; }
+		.game-card-info > button[data-open-game] { display: block; width: 100%; border: 0; padding: 0; background: transparent; color: #286347; text-align: left; font-weight: 700; }
+		.game-cover { width: 112px; height: 128px; display: grid; place-items: center; overflow: hidden; background: #f0f3ef; color: #778178; text-align: center; font-size: .85rem; }
+		.game-cover img { width: 100%; height: 100%; object-fit: cover; }
+		article img { max-width: 100%; height: auto; }
+		.game-detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 300px); gap: 1.5rem; align-items: start; }
+		.game-detail-side { display: grid; justify-items: end; gap: .85rem; }
+		.game-detail-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .5rem; padding: .5rem; border: 1px solid #e9dff0; border-radius: .9rem; background: #fff; box-shadow: 0 8px 22px #32144710; }
+		.game-detail-actions label { display: flex; align-items: center; gap: .45rem; color: #665370; font-size: .76rem; font-weight: 750; }
+		.game-detail-actions select { width: auto; min-width: 108px; min-height: 2.45rem; padding: .35rem 1.8rem .35rem .55rem; border-radius: .55rem; font-size: .8rem; }
+		.game-detail-actions button { min-height: 2.45rem; padding: .4rem .65rem; border-radius: .55rem; font-size: .8rem; white-space: nowrap; }
+		.game-action-like { display: inline-flex; align-items: center; gap: .35rem; }
+		.game-action-like[aria-pressed="true"] { border-color: #9c3e86; background: #9c3e86; }
+		.game-action-count { min-width: 1.2em; font-variant-numeric: tabular-nums; }
+		.game-detail-cover { width: 100%; max-height: 420px; object-fit: contain; background: #f0f3ef; }
+		.game-screenshots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1rem; }
+		.game-screenshots img { width: 100%; max-height: 620px; object-fit: contain; background: #f0f3ef; border-radius: .4rem; }
+		.star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: .15rem; width: max-content; }
+		.star-rating input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+		.star-rating label { display: block; color: #aab3aa; font-size: 2rem; line-height: 1; cursor: pointer; }
+		.star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #d99a16; }
+		.star-rating input:focus-visible + label { outline: 2px solid #286347; outline-offset: 2px; }
+		.admin-table { width: 100%; border-collapse: collapse; }
+		.admin-table th, .admin-table td { padding: .65rem; border: 1px solid #dfe5df; text-align: left; vertical-align: top; }
+		.admin-table th { background: #f4f7f4; }
+		#archiveFilters { padding-bottom: .25rem; }
+		#filterForm { grid-template-columns: repeat(6, minmax(0, 1fr)) auto; align-items: end; width: 100%; max-width: none; margin-bottom: .75rem; gap: .6rem; }
+		#filterForm label { min-width: 0; }
+		#filterForm button { min-height: 2.75rem; }
+		#gameDetailContent > img, #gameDetailContent div img { max-width: 100%; height: auto; margin: .25rem; }
+		dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1rem; }
+		dt { font-weight: 650; }
+		dd { margin: 0; }
+		footer { width: min(100% - 1.25rem, 1240px); margin: 0 auto; padding: .75rem 0 1.25rem; color: #667168; font-size: .9rem; }
+		dialog { width: min(92vw, 650px); max-height: 90vh; overflow: auto; border: 1px solid #dfe5df; border-radius: .6rem; }
+		dialog::backdrop { background: #16241bcc; }
+		@media (max-width: 900px) { #filterForm { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+		@media (max-width: 700px) { .game-detail-layout { grid-template-columns: 1fr; } .game-detail-cover { max-width: 320px; } .admin-table { display: block; overflow-x: auto; white-space: nowrap; } }
+		@media (max-width: 560px) { #filterForm { grid-template-columns: repeat(2, minmax(0, 1fr)); } nav { align-items: stretch; } #sessionStatus { width: 100%; margin: .3rem 0 0; } .game-card { grid-template-columns: minmax(0, 1fr) 88px; } .game-cover { width: 88px; height: 108px; } }
+		/* EMC.hive visual refresh */
+		:root { --ink: #24152f; --muted: #756780; --green: #7938a6; --green-dark: #57217f; --lime: #f1d8ff; --line: #e9dff0; --paper: #fff; --canvas: #f8f3fb; --shadow: 0 18px 48px #30154012; color: var(--ink); background: var(--canvas); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+		body { background: radial-gradient(ellipse at 82% 0%, #eee1f8 0, transparent 34rem), var(--canvas); }
+		header { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; padding: .8rem max(1rem, calc((100% - 1320px) / 2)); background: #ffffffeb; border-bottom: 1px solid #e3e9e1; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+		header h1 { flex: 0 0 auto; font-size: 1.5rem; }
+		header > p { display: none; }
+		.brand-logo { width: 2.2rem; height: 2.2rem; margin-right: .45rem; border: 2px solid #e8d8f1; border-radius: .7rem; object-fit: cover; object-position: center 54%; vertical-align: -.55rem; box-shadow: 0 3px 9px #28103620; }
+		nav { gap: .35rem; }
+		nav a, nav button { padding: .48rem .75rem; border-color: transparent; border-radius: .7rem; background: transparent; color: #435148; font-size: .92rem; font-weight: 650; transition: background .18s ease, color .18s ease, transform .18s ease; }
+		nav a:hover, nav button:hover { transform: translateY(-1px); border-color: transparent; background: #edf3eb; color: var(--green-dark); }
+		nav a[href="#archive"] { background: #edf3eb; color: var(--green-dark); }
+		#sessionStatus { padding: .52rem .8rem; border: 1px solid #e1e9d8; background: #f3f8e9; color: #405b3b; font-size: .87rem; }
+		main { width: min(100% - 2rem, 1320px); margin: 1.35rem auto 2rem; }
+		main > [data-page] { min-height: 65vh; padding: clamp(1.25rem, 3vw, 2.5rem); border: 1px solid #e6ebe4; border-radius: 1.25rem; background-color: #fff; background-image: linear-gradient(#fffffffa, #fffffffa), url("pics/beehive.svg"); background-size: auto, 420px auto; box-shadow: var(--shadow); }
+		h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -.045em; }
+		h3 { margin-top: 2rem; font-size: 1.25rem; letter-spacing: -.025em; }
+		p { color: #536258; }
+		#home { overflow: hidden; position: relative; padding: clamp(2.5rem, 5vw, 4rem); border: 0; color: white; background-color: #43205e; background-image: linear-gradient(120deg, #321447e8 0%, #57217fdf 55%, #7d3eaaeb 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='48' viewBox='0 0 56 48'%3E%3Cpath d='M14 1h28l13 23-13 23H14L1 24z' fill='none' stroke='%23ffffff' stroke-opacity='.28' stroke-width='1.2'/%3E%3C/svg%3E"); background-size: auto, 56px 48px; }
+		#home { overflow: hidden; position: relative; padding: clamp(2.5rem, 5vw, 4rem); border: 0; color: white; background-color: #43205e; background-image: linear-gradient(120deg, #321447e8 0%, #57217fdf 55%, #7d3eaaeb 100%); }
+		#home::after { content: ""; position: absolute; z-index: 1; width: min(52%, 520px); height: 100%; top: 0; right: 0; background: url("pics/beehive.svg") center right / contain no-repeat; filter: invert(1); opacity: .18; pointer-events: none; }
+		#home h2 { max-width: 780px; margin: .4rem 0 1rem; font-size: clamp(2.6rem, 6vw, 5.2rem); line-height: .99; letter-spacing: -.07em; }
+		#home p { max-width: 680px; color: #e0ebe0; font-size: 1.08rem; }
+		#home > p:first-of-type::before { content: "THE BSEMC GAME ARCHIVE"; display: block; margin-bottom: .75rem; color: #f1d8ff; font-size: .76rem; font-weight: 800; letter-spacing: .16em; }
+		#home > p:nth-of-type(2) { display: flex; align-items: center; gap: .65rem; margin: 1.7rem 0 2.4rem; }
+		#home > p:nth-of-type(2) a { display: inline-block; padding: .78rem 1rem; border: 1px solid #ffffff48; border-radius: .7rem; color: white; font-size: .95rem; font-weight: 700; text-decoration: none; }
+		#home > p:nth-of-type(2) a:first-child { border-color: #eed1ff; background: #eed1ff; color: #321447; }
+		#home > p:nth-of-type(2) a:hover { transform: translateY(-2px); }
+		#home h3 { color: white; }
+		#home #featuredGames article { border-color: #ffffff2e; background: #ffffff14; color: white; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+		#home #featuredGames p { color: #e0ebe0; }
+		#home .game-card-info > button[data-open-game] { color: white; font-size: 1.1rem; }
+		#home .game-cover { border: 1px solid #ffffff35; background: #ffffff13; color: #f3e7fb; }
+		#archive > section { margin-top: 1.25rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 1rem; background: #fff; }
+		#archive > section h3 { margin: 0 0 1rem; }
+		#filterForm { gap: .75rem; }
+		#filterForm label { color: #665370; font-size: .82rem; font-weight: 750; }
+		input, select, textarea { border-color: #d9e1d9; border-radius: .65rem; background: #fbfcfa; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+		input, select { min-height: 2.9rem; }
+		input:focus, select:focus, textarea:focus { outline: none; border-color: #5da67b; background: #fff; box-shadow: 0 0 0 4px #237a521c; }
+		button { border-color: var(--green); border-radius: .65rem; background: var(--green); font-weight: 700; transition: background .16s ease, transform .16s ease, box-shadow .16s ease; }
+		button:hover { transform: translateY(-1px); border-color: var(--green-dark); background: var(--green-dark); box-shadow: 0 6px 16px #15583b25; }
+		button[type="reset"], [data-back], #cancelGameEditor { border-color: #d9e1d9; background: #fff; color: #314238; }
+		#gameList { gap: 1rem; }
+		#gameList article, #featuredGames article { border-color: #e6ebe4; border-radius: 1rem; box-shadow: 0 7px 22px #1c36200a; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+		#gameList article:hover, #featuredGames article:hover { transform: translateY(-3px); border-color: #cbd9c8; box-shadow: 0 14px 28px #1c362014; }
+		.game-card { grid-template-columns: minmax(0, 1fr) 122px; min-height: 168px; padding: 1.1rem; }
+		.game-card-info > button[data-open-game] { color: #602984; font-size: 1.12rem; }
+		.game-cover { width: 122px; height: 140px; border-radius: .75rem; background: #edf2eb; }
+		#archiveCount { color: var(--muted); font-size: .9rem; }
+		.game-detail-layout { gap: 2rem; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: 1rem; background: #fff; }
+		.game-detail-cover { border-radius: .85rem; box-shadow: 0 12px 30px #17241f1a; }
+		.game-screenshots img { border: 1px solid var(--line); border-radius: .8rem; }
+		#gameReviews article { margin: .8rem 0; border-radius: .9rem; }
+		#gameReviews h4 { color: var(--ink); }
+		#gameDetail > [data-back] { margin-bottom: 1rem; }
+		#profileSummary, #profileLogs, #profileUploadedGames, #profileFavorites, #profileReviews, #adminSubmissions, #adminGames, #adminUsers, #reportedReviews, #mySubmissions { margin-top: .8rem; }
+		.admin-table { overflow: hidden; border: 1px solid var(--line); border-radius: .8rem; background: white; }
+		.admin-table th { background: #f5eef9; color: #665370; font-size: .8rem; text-transform: uppercase; letter-spacing: .07em; }
+		.admin-table td { border-color: var(--line); }
+		#profileSummary { padding: .9rem 1rem; border: 1px solid #e9dff0; border-radius: .85rem; background: linear-gradient(110deg, #f6effa, #fcf9fd); }
+		#profileSummary p { margin: 0; color: #5b3470; font-weight: 650; }
+		.profile-course-form { display: grid; grid-template-columns: auto minmax(140px, 1fr) auto; align-items: center; gap: .55rem; margin-top: .75rem; }
+		.profile-course-form label { color: #665370; font-size: .82rem; }
+		.profile-course-form input, .profile-course-form button { min-height: 2.45rem; padding: .4rem .65rem; font-size: .84rem; }
+		.hive-art { position: absolute; z-index: 1; top: 2.1rem; right: 2.4rem; width: clamp(100px, 17vw, 190px); aspect-ratio: 1; border: 5px solid #ffffff35; border-radius: 2rem; object-fit: cover; object-position: center 54%; box-shadow: 0 20px 55px #17052665; transform: rotate(4deg); }
+		#home h2, #home > p, #home > h3, #home #featuredGames { position: relative; z-index: 2; }
+		#home h2, #home > p:first-of-type { max-width: min(760px, calc(100% - 190px)); }
+		nav a[href="#archive"] { background: #f2eaf7; color: #57217f; }
+		nav a:hover, nav button:hover { background: #f2eaf7; color: #57217f; }
+		button { border-color: #7938a6; background: #7938a6; }
+		button:hover { border-color: #57217f; background: #57217f; }
+		input:focus, select:focus, textarea:focus { border-color: #a66ac8; box-shadow: 0 0 0 4px #7938a61c; }
+		.upload-drop { border-color: #b994ca; background: #fbf7fd; color: #665370; }
+		.upload-drop.drag-over { border-color: #7938a6; background: #f1e5f8; }
+		#adminSubmissions article, #reportedReviews article, #mySubmissions article, #profileUploadedGames article, #profileReviews article { border-color: #e6ebe4; border-radius: .85rem; box-shadow: 0 7px 22px #1c36200a; }
+		footer { color: #718076; }
+		@media (max-width: 820px) { header { align-items: flex-start; flex-direction: column; gap: .5rem; } nav { width: 100%; } #sessionStatus { margin-left: auto; } }
+		@media (max-width: 700px) { .hive-art { top: 1.2rem; right: 1.1rem; width: 78px; border-width: 3px; border-radius: 1.1rem; } #home h2, #home > p:first-of-type { max-width: 100%; padding-right: 68px; } #home::after { width: 55%; opacity: .12; } }
+		@media (max-width: 560px) { main { width: min(100% - 1rem, 1320px); margin-top: .5rem; } main > [data-page] { padding: 1rem; border-radius: .85rem; } #home { padding: 2rem 1.15rem; } #home > p:nth-of-type(2) { align-items: stretch; flex-direction: column; } #home > p:nth-of-type(2) a { text-align: center; } #archive > section { padding: .85rem; } .game-card { grid-template-columns: minmax(0, 1fr) 88px; padding: .85rem; } .game-cover { width: 88px; height: 108px; } }
+		@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+		/* Refined purple hive design */
+		:root { --ink: #271b35; --muted: #746981; --green: #7439a0; --green-dark: #552579; --lime: #f0dcff; --line: #e8def0; --canvas: #f7f4fa; --shadow: 0 16px 46px #37204812; }
+		body { color: var(--ink); background: radial-gradient(ellipse at 88% 0, #efe5f7 0, transparent 30rem), var(--canvas); }
+		header { padding: .7rem max(1rem, calc((100% - 1360px) / 2)); background: #fffd; border-color: #e8e0ec; box-shadow: 0 5px 25px #32144708; }
+		header h1 { font-size: 1.42rem; letter-spacing: -.055em; }
+		.brand-logo { width: 2.45rem; height: 2.45rem; border-radius: .8rem; box-shadow: 0 4px 12px #32144722; }
+		nav { gap: .25rem; }
+		nav a, nav button { padding: .55rem .85rem; color: #594c63; font-size: .9rem; }
+		nav a[href="#archive"] { background: #f1e8f7; color: #552579; }
+		nav a:hover, nav button:hover { background: #f2eaf7; color: #552579; }
+		#sessionStatus { padding: .5rem .85rem; border-color: #e9def0; background: #f7f0fb; color: #62437a; }
+		#sessionStatus { border-color: #e6d9ee; background: #f5eef9; color: #60347a; }
+		main { width: min(100% - 2rem, 1360px); margin: 1.2rem auto 2.5rem; }
+		main > [data-page] { padding: clamp(1.15rem, 2.4vw, 2rem); border-color: #e9e1ee; border-radius: 1.35rem; background-color: #fff; background-image: linear-gradient(#fffffffc, #fffffffc), url("pics/beehive.svg"); background-size: auto, 460px auto; box-shadow: 0 20px 60px #3214470c; }
+		h2 { color: #2b1b38; font-size: clamp(1.9rem, 3.2vw, 2.7rem); letter-spacing: -.06em; }
+		h3 { color: #382545; font-size: 1.25rem; letter-spacing: -.035em; }
+		p { color: #695e71; }
+		#home { min-height: 0; padding: clamp(2.2rem, 5vw, 4.5rem); border-radius: 1.4rem; background-image: linear-gradient(112deg, #28103aeF 0%, #4f1d70eF 48%, #7a3d9ceB 100%); box-shadow: 0 25px 70px #32144726; }
+		#home::after { width: 48%; opacity: .14; background-size: 100% auto; }
+		#home h2 { max-width: 820px; margin: .35rem 0 1.15rem; font-size: clamp(3rem, 7vw, 6.4rem); line-height: .96; letter-spacing: -.085em; }
+		#home > p:first-of-type::before { content: "✦  BSEMC STUDENT GAME ARCHIVE"; margin-bottom: 1rem; color: #e5bcff; font-size: .73rem; letter-spacing: .18em; }
+		#home p { line-height: 1.75; }
+		#home > p:nth-of-type(2) { margin-top: 1.8rem; }
+		#home > p:nth-of-type(2) a { padding: .85rem 1.15rem; border-radius: .75rem; transition: transform .18s ease, box-shadow .18s ease; }
+		#home > p:nth-of-type(2) a:first-child { background: #f0dcff; color: #351747; box-shadow: 0 8px 24px #17052630; }
+		#home h3 { margin-top: 2.5rem; color: white; }
+		#home #featuredGames article { min-height: 168px; padding: 1.15rem; border-radius: 1rem; background: #ffffff13; box-shadow: inset 0 1px #ffffff22; }
+		#home #featuredGames article:hover { transform: translateY(-4px); background: #ffffff1b; }
+		#featuredGames { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .85rem; }
+		#home #featuredGames article { min-height: 0; padding: .8rem; }
+		#home #featuredGames .game-card { grid-template-columns: minmax(0, 1fr) 92px; min-height: 156px; gap: .8rem; padding: 1rem; }
+		#home #featuredGames .game-cover { width: 92px; height: 116px; border-radius: .65rem; }
+		#home #featuredGames .game-card-info > p { margin: .25rem 0; font-size: .79rem; }
+		.home-link { display: inline-flex; align-items: center; gap: .4rem; }
+		.home-icon { width: 1.15rem; height: 1.15rem; object-fit: contain; vertical-align: middle; filter: invert(24%) sepia(24%) saturate(1961%) hue-rotate(235deg) brightness(88%) contrast(91%); }
+		.admin-game-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 1rem; margin: .6rem 0; }
+		.admin-game-row > div:first-child { display: grid; gap: .2rem; }
+		.admin-game-row small { color: var(--muted); }
+		.admin-game-actions { white-space: nowrap; }
+		label.featured-toggle { display: flex; align-items: center; gap: .45rem; color: #604178; white-space: nowrap; }
+		label.featured-toggle input { width: 1.1rem; min-height: 1.1rem; margin: 0; accent-color: #7439a0; }
+		.hive-art { width: clamp(110px, 16vw, 190px); border: 4px solid #ffffff45; border-radius: 1.25rem; box-shadow: 0 20px 45px #14071e55; }
+		#home h2 { max-width: 780px; color: #fff; font-size: clamp(3rem, 6.4vw, 5.8rem); line-height: 1.04; letter-spacing: -.065em; text-shadow: 0 2px 18px #1d0c2d55; }
+		#home > p:first-of-type { max-width: 62ch; color: #f3eafb; font-size: 1.05rem; line-height: 1.75; }
+		#home > p:first-of-type::before { color: #f0d7ff; }
+		#archive > section { margin-top: 1.1rem; padding: clamp(1rem, 2vw, 1.5rem); border-color: #ece4f0; border-radius: 1rem; box-shadow: 0 8px 26px #32144708; }
+		#archive > section h3 { display: flex; align-items: center; gap: .6rem; margin-bottom: 1.1rem; }
+		#archive > section h3::before { content: ""; width: .55rem; height: .55rem; border-radius: 50%; background: #9c62bd; box-shadow: 0 0 0 4px #f1e8f7; }
+		#filterForm { grid-template-columns: minmax(170px, 1.6fr) repeat(4, minmax(120px, 1fr)) minmax(140px, 1fr) auto; gap: .7rem; }
+		#filterForm label { color: #665370; font-size: .78rem; letter-spacing: .01em; }
+		input, select, textarea { border-color: #e2d9e8; border-radius: .7rem; background-color: #fdfbfe; }
+		input, select { min-height: 3rem; }
+		input:focus, select:focus, textarea:focus { border-color: #a76ac8; background: white; box-shadow: 0 0 0 4px #7938a61b; }
+		button { border-color: #7439a0; border-radius: .7rem; background: #7439a0; box-shadow: 0 4px 12px #7439a01c; }
+		button:hover { border-color: #552579; background: #552579; box-shadow: 0 8px 18px #55257928; }
+		button[type="reset"], [data-back], #cancelGameEditor { border-color: #e3d8e9; background: white; color: #594665; box-shadow: none; }
+		#gameList { grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: 1rem; }
+		#gameList article, #featuredGames article { border-color: #ece4f0; border-radius: 1rem; box-shadow: 0 8px 25px #3214470b; }
+		#gameList article:hover, #featuredGames article:hover { border-color: #d7c3e3; box-shadow: 0 16px 35px #32144717; }
+		.game-card { grid-template-columns: minmax(0, 1fr) 120px; min-height: 170px; padding: 1.15rem; }
+		.game-card-info > button[data-open-game] { color: #602984; font-size: 1.15rem; letter-spacing: -.025em; }
+		.game-cover { width: 120px; height: 142px; border: 1px solid #e8deee; border-radius: .8rem; background: linear-gradient(145deg, #f8f2fb, #eee5f4); }
+		.game-detail-layout { padding: clamp(1.1rem, 3vw, 2.2rem); border-color: #ece4f0; border-radius: 1.15rem; box-shadow: 0 10px 28px #32144708; }
+		.game-detail-actions { border-color: #e8def0; background: #fdfbfe; }
+		.game-detail-actions select { min-height: 2.4rem; }
+		.game-detail-cover { background: #f5eef8; }
+		.game-screenshots img { border-color: #e9e0ed; box-shadow: 0 12px 28px #32144710; }
+		#reviewFormContainer, #gameReviews article { padding: 1.1rem; border: 1px solid #ece4f0; border-radius: 1rem; background: #fff; }
+		#gameReviews article { box-shadow: 0 8px 24px #32144709; }
+		.role-badge-student { color: #1453b8; background: #e8f0ff; }
+		.owner-reply { border-radius: 0 .65rem .65rem 0; border-left-color: #8e55ad; background: #f8f2fb; }
+		fieldset { border-color: #e8deee; border-radius: .8rem; background: #fdfbfe; }
+		.upload-drop { border-color: #c8add7; border-radius: .75rem; background: #faf6fc; color: #665370; cursor: pointer; transition: background .16s ease, border-color .16s ease; }
+		.image-preview img { border-radius: .65rem; box-shadow: 0 4px 12px #32144716; }
+		.uploaded-game-card { border-radius: 1rem; }
+		.uploaded-game-cover { border: 1px solid #e8deee; border-radius: .7rem; }
+		#profileSummary { padding: 1rem 1.15rem; border-color: #e9dff0; background: linear-gradient(110deg, #f7f0fb, #fdfbfe); }
+		.admin-table { border-color: #e8deee; border-radius: .9rem; }
+		.admin-table th { background: #f6effa; color: #684879; }
+		.admin-table td, .admin-table th { border-color: #eee6f2; }
+		dialog { border-color: #e7dcec; border-radius: 1rem; box-shadow: 0 24px 80px #1c0d2b45; }
+		footer { color: #81748a; }
+		@media (max-width: 1100px) { #filterForm { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+		@media (max-width: 700px) { header { gap: .6rem; } #filterForm { grid-template-columns: repeat(2, minmax(0, 1fr)); } #filterForm label:first-child { grid-column: 1 / -1; } .hive-art { display: none; } #home h2 { max-width: 100%; padding-right: 0; font-size: clamp(2.65rem, 10.5vw, 3.8rem); line-height: 1.04; } #home h2 br { display: none; } #home > p:first-of-type { max-width: 62ch; padding-right: 0; font-size: 1rem; } .admin-game-row { grid-template-columns: 1fr auto; } .admin-game-actions { grid-column: 1 / -1; } .game-detail-layout { grid-template-columns: 1fr; } .game-detail-side { grid-row: 1; justify-items: stretch; } .game-detail-actions { justify-content: flex-start; } .game-detail-cover { justify-self: end; max-width: 180px; } }
+		@media (max-width: 520px) { main { width: calc(100% - 1rem); margin-top: .6rem; } main > [data-page] { padding: 1rem; border-radius: 1rem; } #home { padding: 1.5rem 1.1rem; } #home h2 { font-size: clamp(2.5rem, 12vw, 3.5rem); } #home > p:nth-of-type(2) { flex-direction: column; align-items: stretch; } #home > p:nth-of-type(2) a { text-align: center; } .game-card { grid-template-columns: minmax(0, 1fr) 82px; min-height: 140px; padding: .85rem; } .game-cover { width: 82px; height: 104px; } .admin-table { font-size: .86rem; } }
+		@media (max-width: 520px) { .profile-course-form { grid-template-columns: 1fr; } }
+	</style>
+</head>
+<body>
+	<header>
+		<h1><a href="#home" data-view="home"><img class="brand-logo" src="pics/BSEMC.jpg" alt="">EMC.hive</a></h1>
+		<p>A community archive and diary for games made in the BSEMC program.</p>
+		<nav aria-label="Main navigation">
+			<a class="home-link" href="#home" data-view="home"><img class="home-icon" src="pics/home%20button.svg" alt=""> Home</a>
+			<a href="#archive" data-view="archive">Game Archive</a>
+			<a href="#submit" data-view="submit" data-auth="true">Submit a Game</a>
+			<a href="#profile" data-view="profile" data-auth="true">My Profile</a>
+			<a href="#admin" data-view="admin" data-admin="true" hidden>Admin</a>
+			<a href="login.html" data-anon="true">Log in</a>
+			<a href="signup.html" data-anon="true">Sign up</a>
+			<button type="button" id="logoutButton" hidden>Log out</button>
+			<p id="sessionStatus" aria-live="polite">Browsing as a visitor</p>
+		</nav>
+	</header>
+
+	<main>
+		<section id="home" data-page>
+			<img class="hive-art" src="pics/BSEMC.jpg" alt="BSEMC program logo">
+			<h2>Games made here.<br>Stories that stay.</h2>
+			<p>EMC.hive documents, preserves, and celebrates student-made games. Browse projects, learn about their teams, and keep a personal diary of the games you have played or want to play. Games are documented here; they are not playable on this site.</p>
+			<p><a href="#archive" data-view="archive">Browse the archive</a> · <a href="signup.html">Create an account</a></p>
+			<h3>Featured games</h3>
+				<div id="featuredGames" aria-live="polite"></div>
+		</section>
+
+		<section id="archive" data-page hidden>
+			<h2>Game archive</h2>
+			<section aria-labelledby="filterHeading">
+				<h3 id="filterHeading">Search and filters</h3>
+				<div id="archiveFilters">
+					<form id="filterForm">
+						<label>Search title <input id="searchInput" type="search" placeholder="Search games"></label>
+						<label>Genre <select id="genreFilter"><option value="">All genres</option></select></label>
+						<label>Release year <select id="yearFilter"><option value="">All years</option></select></label>
+						<label>Platform <select id="platformFilter"><option value="">All platforms</option></select></label>
+						<label>Engine <select id="engineFilter"><option value="">All engines</option></select></label>
+						<label>Sort by
+							<select id="sortFilter">
+								<option value="title">Title</option>
+								<option value="year">Release year</option>
+								<option value="rating">Top rated</option>
+								<option value="likes">Most liked</option>
+							</select>
+						</label>
+						<button type="reset">Clear</button>
+					</form>
+				</div>
+			</section>
+			<section aria-labelledby="gamesHeading">
+				<h3 id="gamesHeading">Games</h3>
+				<p id="archiveCount" aria-live="polite"></p>
+				<div id="gameList" aria-live="polite"></div>
+			</section>
+		</section>
+
+		<section id="gameDetail" data-page hidden>
+			<button type="button" data-back="archive">← Back to archive</button>
+			<div id="gameDetailContent"></div>
+			<section aria-labelledby="reviewsHeading">
+				<h3 id="reviewsHeading">Ratings and reviews</h3>
+				<div id="reviewFormContainer"></div>
+				<div id="gameReviews"></div>
+			</section>
+		</section>
+
+		<section id="submit" data-page hidden>
+			<h2>Submit a game</h2>
+			<p>Submissions are reviewed by an administrator before they appear in the archive. Published game details can only be edited by an administrator; contact the administrator to request a correction.</p>
+			<form id="submissionForm">
+				<label>Game title <input name="title" required maxlength="120"></label>
+				<label>Description <textarea name="description" required rows="5"></textarea></label>
+				<label>Release year <input name="year" class="release-year" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></label>
+				<label>Genre <select name="genre" class="genre-select" required></select></label>
+				<label>Platform <select name="platform" class="platform-select" required></select></label>
+				<label>Game engine <select name="engine" class="engine-select" required></select></label>
+				<label>Cover image
+					<span class="upload-drop" id="submissionCoverDrop">Drop a cover image here or choose a file (PNG, JPG, WEBP, GIF)</span>
+					<input name="coverFile" id="submissionCoverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+				</label>
+				<label>Screenshots
+					<span class="upload-drop" id="submissionScreenshotsDrop">Drop screenshots here or choose image files</span>
+					<input name="screenshotFiles" id="submissionScreenshotFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+				</label>
+				<div id="submissionImagePreviews" class="image-previews"></div>
+				<fieldset>
+					<legend>Team members and roles</legend>
+					<div id="teamFields"></div>
+					<button type="button" id="addTeamMember">Add team member</button>
+				</fieldset>
+				<fieldset>
+					<legend>Optional contact details</legend>
+					<label>Contact email <input name="contactEmail" type="email"></label>
+					<label>Contact link <input name="contactLink" type="url" placeholder="https://…"></label>
+				</fieldset>
+				<button type="submit">Send for review</button>
+			</form>
+			<p id="submissionMessage" role="status"></p>
+			<h3>My submissions</h3>
+			<div id="mySubmissions"></div>
+		</section>
+
+		<section id="profile" data-page hidden>
+			<h2>My profile</h2>
+			<div id="profileSummary"></div>
+			<h3>My game diary</h3>
+			<div id="profileLogs"></div>
+			<h3>Games I uploaded</h3>
+			<div id="profileUploadedGames"></div>
+			<h3>Favorites</h3>
+			<div id="profileFavorites"></div>
+			<h3>My reviews</h3>
+			<div id="profileReviews"></div>
+		</section>
+
+		<section id="admin" data-page hidden>
+			<h2>Administrator dashboard</h2>
+			<p>Review incoming submissions and manage archive entries, accounts, and reported reviews.</p>
+			<h3>Pending submissions and change requests</h3>
+			<div id="adminSubmissions"></div>
+			<h3>Game management</h3>
+			<button type="button" id="addGameButton">Add game directly</button>
+			<div id="adminGames"></div>
+			<h3>User management</h3>
+			<div id="adminUsers"></div>
+			<h3>Reported reviews</h3>
+			<div id="reportedReviews"></div>
+		</section>
+	</main>
+
+	<footer><p>EMC.hive · BSEMC student-made games archive</p></footer>
+
+	<dialog id="gameEditor">
+		<form id="gameEditorForm" method="dialog">
+			<h2 id="gameEditorHeading">Add game</h2>
+				<input type="hidden" name="id">
+			<label>Title <input name="title" required></label>
+			<label>Description <textarea name="description" required rows="4"></textarea></label>
+				<label>Release year <input name="year" class="release-year" type="text" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></label>
+			<label>Genre <select name="genre" class="genre-select" required></select></label>
+			<label>Platform <select name="platform" class="platform-select" required></select></label>
+			<label>Engine <select name="engine" class="engine-select" required></select></label>
+			<label>Cover image
+				<span class="upload-drop" id="adminCoverDrop">Drop a cover image here or choose a file (PNG, JPG, WEBP, GIF)</span>
+				<input name="coverFile" id="adminCoverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+			</label>
+			<label>Screenshots
+				<span class="upload-drop" id="adminScreenshotsDrop">Drop screenshots here or choose image files</span>
+				<input name="screenshotFiles" id="adminScreenshotFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+			</label>
+			<div id="adminImagePreviews" class="image-previews"></div>
+			<fieldset><legend>Team members and roles</legend><div id="adminTeamFields"></div><button type="button" id="addAdminTeamMember">Add team member</button></fieldset>
+			<button type="submit">Save game</button>
+			<button type="button" id="cancelGameEditor">Cancel</button>
+		</form>
+	</dialog>
+
+	<script>
+		'use strict';
+
+		const STORAGE_KEY = 'emcHivePrototypeV1';
+		const demoGames = [
+			{ id: 'demo-1', title: 'The Last Lantern', year: 2024, genre: 'Adventure', platform: 'PC', engine: 'Unity', description: 'A student-made adventure game about finding your way through a quiet, changing world.', cover: '', screenshots: [], team: [{ name: 'BSEMC Game Team', role: 'Development team' }], approved: true, featured: true },
+			{ id: 'demo-2', title: 'Pixel Garden', year: 2023, genre: 'Puzzle', platform: 'Web', engine: 'Godot', description: 'Arrange a tiny pixel garden and discover the stories hidden in its plants.', cover: '', screenshots: [], team: [{ name: 'BSEMC Game Team', role: 'Development team' }], approved: true, featured: true }
+		];
+		const demoUsers = [
+			{ id: 'admin-1', name: 'EMC.hive Administrator', username: 'admin', email: 'admin@emc.hive', password: 'admin123', type: 'admin', disabled: false },
+			{ id: 'demo-student-1', name: 'Demo Student', username: '20231559-N', studentId: '20231559-N', email: 'student.demo@emchive.local', password: 'Student123!', type: 'student', disabled: false },
+			{ id: 'demo-alumni-1', name: 'Demo Alumni', username: '20231560-S', studentId: '20231560-S', email: 'alumni.demo@emchive.local', password: 'Alumni123!', type: 'alumni', disabled: false },
+			{ id: 'demo-guest-1', name: 'Demo Guest Viewer', username: 'guest.demo@emchive.local', studentId: '', email: 'guest.demo@emchive.local', course: 'BSEMC', password: 'Guest123!', type: 'guest', disabled: false }
+		];
+		const GENRES = ['Action', 'Adventure', 'Arcade', 'Casual', 'Educational', 'Fighting', 'Horror', 'Platformer', 'Puzzle', 'Racing', 'Role-playing (RPG)', 'Simulation', 'Sports', 'Strategy', 'Visual Novel'];
+		const PLATFORMS = ['Android', 'iOS', 'Linux', 'macOS', 'Nintendo Switch', 'PC', 'PlayStation', 'Web', 'Windows', 'Xbox'];
+		const ENGINES = ['Construct', 'GameMaker', 'Godot', 'Other', 'Ren\'Py', 'RPG Maker', 'Unity', 'Unreal Engine'];
+		const TEAM_ROLES = ['Project Manager', 'Programmer', '3D artist/ Modeler', '3D animator', '2D artist', '2D animator', 'Graphics Designer', 'Lead Artist', 'Lead Sound Effects', 'SFX'];
+		const initialData = { users: demoUsers, games: demoGames, submissions: [], logs: [], favorites: [], likes: [], reviews: [], reports: [], currentUserId: null };
+		let data = loadData();
+		let activeGameId = null;
+		let editingReviewId = null;
+		let adminEditorScreenshots = [];
+		let adminEditorCover = '';
+		let activeReviewId = null;
+		const CURRENT_YEAR = new Date().getFullYear();
+		function setSelectOptions(select, options, currentValue = '') {
+			select.innerHTML = '<option value="">Choose…</option>' + options.map(option => `<option value="${escapeHTML(option)}">${escapeHTML(option)}</option>`).join('');
+			if (currentValue && !options.includes(currentValue)) select.add(new Option(currentValue, currentValue));
+			select.value = currentValue;
+		}
+		document.querySelectorAll('.genre-select').forEach(select => setSelectOptions(select, GENRES));
+		document.querySelectorAll('.platform-select').forEach(select => setSelectOptions(select, PLATFORMS));
+		document.querySelectorAll('.engine-select').forEach(select => setSelectOptions(select, ENGINES));
+		document.querySelectorAll('.release-year').forEach(input => {
+			input.addEventListener('input', () => {
+				input.value = input.value.replace(/\D/g, '').slice(0, 4);
+				input.setCustomValidity(input.value.length === 4 && Number(input.value) <= CURRENT_YEAR && Number(input.value) >= 1970 ? '' : `Enter a four-digit year from 1970 to ${CURRENT_YEAR}.`);
+			});
+		});
+		function readImage(file) {
+			if (!file.type.startsWith('image/')) return Promise.reject(new Error(`${file.name} is not an image.`));
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(String(reader.result));
+				reader.onerror = () => reject(new Error(`Could not read ${file.name}.`));
+				reader.readAsDataURL(file);
+			});
+		}
+		function setInputFiles(input, files) {
+			const transfer = new DataTransfer();
+			[...input.files, ...files].filter((file, index, list) => list.findIndex(item => item.name === file.name && item.size === file.size) === index).forEach(file => transfer.items.add(file));
+			input.files = transfer.files;
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+		function replaceInputFiles(input, files) {
+			const transfer = new DataTransfer();
+			files.forEach(file => transfer.items.add(file));
+			input.files = transfer.files;
+			input.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+		function setupImageUploads({ coverInput, screenshotInput, coverDrop, screenshotDrop, preview, includeExisting = false }) {
+			const renderPreviews = async () => {
+				const previews = [];
+				try {
+					if (includeExisting && adminEditorCover) previews.push(`<div class="image-preview"><img src="${escapeHTML(adminEditorCover)}" alt="Current cover preview"><button type="button" data-remove-upload="existing-cover">Remove cover</button></div>`);
+					if (coverInput.files[0]) previews.push(`<div class="image-preview"><img src="${await readImage(coverInput.files[0])}" alt="Selected cover preview"><button type="button" data-remove-upload="cover-file">Remove cover</button></div>`);
+					if (includeExisting) adminEditorScreenshots.forEach((url, index) => previews.push(`<div class="image-preview"><img src="${escapeHTML(url)}" alt="Current screenshot ${index + 1} preview"><button type="button" data-remove-upload="existing-screenshot" data-index="${index}">Remove screenshot</button></div>`));
+					for (const [index, file] of [...screenshotInput.files].entries()) previews.push(`<div class="image-preview"><img src="${await readImage(file)}" alt="Selected screenshot ${index + 1} preview"><button type="button" data-remove-upload="screenshot-file" data-index="${index}">Remove screenshot</button></div>`);
+					preview.innerHTML = previews.join('');
+				} catch (error) { preview.textContent = error.message; }
+			};
+			[coverInput, screenshotInput].forEach(input => input.addEventListener('change', renderPreviews));
+			preview.addEventListener('click', event => {
+				const button = event.target.closest('[data-remove-upload]');
+				if (!button) return;
+				if (button.dataset.removeUpload === 'cover-file') replaceInputFiles(coverInput, []);
+				if (button.dataset.removeUpload === 'screenshot-file') replaceInputFiles(screenshotInput, [...screenshotInput.files].filter((_, index) => index !== Number(button.dataset.index)));
+				if (button.dataset.removeUpload === 'existing-cover') { adminEditorCover = ''; renderPreviews(); }
+				if (button.dataset.removeUpload === 'existing-screenshot') { adminEditorScreenshots.splice(Number(button.dataset.index), 1); renderPreviews(); }
+			});
+			[[coverDrop, coverInput], [screenshotDrop, screenshotInput]].forEach(([drop, input]) => {
+				drop.addEventListener('click', () => input.click());
+				drop.addEventListener('dragover', event => { event.preventDefault(); drop.classList.add('drag-over'); });
+				['dragleave', 'drop'].forEach(type => drop.addEventListener(type, event => { event.preventDefault(); drop.classList.remove('drag-over'); }));
+				drop.addEventListener('drop', event => setInputFiles(input, [...event.dataTransfer.files].filter(file => file.type.startsWith('image/'))));
+			});
+			return renderPreviews;
+		}
+		const renderSubmissionPreviews = setupImageUploads({ coverInput: document.getElementById('submissionCoverFile'), screenshotInput: document.getElementById('submissionScreenshotFiles'), coverDrop: document.getElementById('submissionCoverDrop'), screenshotDrop: document.getElementById('submissionScreenshotsDrop'), preview: document.getElementById('submissionImagePreviews') });
+		const renderAdminPreviews = setupImageUploads({ coverInput: document.getElementById('adminCoverFile'), screenshotInput: document.getElementById('adminScreenshotFiles'), coverDrop: document.getElementById('adminCoverDrop'), screenshotDrop: document.getElementById('adminScreenshotsDrop'), preview: document.getElementById('adminImagePreviews'), includeExisting: true });
+
+		function loadData() {
+			try {
+				const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+				if (saved && Array.isArray(saved.users)) {
+					saved.likes = Array.isArray(saved.likes) ? saved.likes : [];
+					saved.favorites = Array.isArray(saved.favorites) ? saved.favorites : [];
+					for (const [userId, studentId] of [['demo-student-1', '20231559-N'], ['demo-alumni-1', '20231560-S']]) {
+						const demoUser = saved.users.find(user => user.id === userId);
+						if (demoUser) { demoUser.studentId = studentId; demoUser.username = studentId; }
+					}
+					const knownIds = new Set(saved.users.map(user => user.id));
+					saved.users.push(...demoUsers.filter(user => !knownIds.has(user.id)));
+					localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+					return saved;
+				}
+				return structuredClone(initialData);
+			} catch {
+				return structuredClone(initialData);
+			}
+		}
+		function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+		function uid(prefix) { return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
+		function escapeHTML(value = '') {
+			return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+		}
+		function currentUser() { return data.users.find(user => user.id === data.currentUserId) || null; }
+		function byId(id) { return data.games.find(game => game.id === id); }
+		function deleteGame(id) {
+			data.games = data.games.filter(game => game.id !== id);
+			data.logs = data.logs.filter(item => item.gameId !== id);
+			data.favorites = data.favorites.filter(item => item.gameId !== id);
+			data.likes = (data.likes || []).filter(item => item.gameId !== id);
+			const removedReviews = data.reviews.filter(item => item.gameId === id).map(item => item.id);
+			data.reviews = data.reviews.filter(item => item.gameId !== id);
+			data.reports = data.reports.filter(item => !removedReviews.includes(item.reviewId));
+		}
+		function removeReview(id) {
+			data.reviews = data.reviews.filter(review => review.id !== id);
+			data.reports = data.reports.filter(report => report.reviewId !== id);
+		}
+		function showMessage(id, message) { document.getElementById(id).textContent = message; }
+		function navigate(view) {
+			if (view === 'login' || view === 'signup') { location.href = `${view}.html`; return; }
+			if (view === 'admin' && currentUser()?.type !== 'admin') { location.href = 'login.html'; return; }
+			if (['profile', 'submit'].includes(view) && !currentUser()) { location.href = 'login.html'; return; }
+			if (view === 'submit' && currentUser()?.type === 'guest') { navigate('archive'); return; }
+			document.querySelectorAll('[data-page]').forEach(page => { page.hidden = page.id !== view; });
+			if (view === 'gameDetail') renderGameDetail();
+			if (view === 'profile') renderProfile();
+			if (view === 'submit') renderMySubmissions();
+			if (view === 'admin') renderAdmin();
+			history.replaceState(null, '', `#${view === 'gameDetail' ? 'game' : view}`);
+			window.scrollTo(0, 0);
+		}
+		document.addEventListener('click', event => {
+			const nav = event.target.closest('[data-view]');
+			if (nav) {
+				event.preventDefault();
+				navigate(nav.dataset.view);
+			}
+			const back = event.target.closest('[data-back]');
+			if (back) navigate(back.dataset.back);
+			const openGame = event.target.closest('[data-open-game]');
+			if (openGame) { activeGameId = openGame.dataset.openGame; navigate('gameDetail'); }
+			const adminViewGame = event.target.closest('[data-admin-view-game]');
+			if (adminViewGame) { activeGameId = adminViewGame.dataset.adminViewGame; activeReviewId = null; navigate('gameDetail'); }
+			const seeReview = event.target.closest('[data-see-review]');
+			if (seeReview) { const review = data.reviews.find(item => item.id === seeReview.dataset.seeReview); if (review) { activeGameId = review.gameId; activeReviewId = review.id; navigate('gameDetail'); } }
+			const removeOwnedGame = event.target.closest('[data-remove-owned-game]');
+			if (removeOwnedGame) {
+				const user = currentUser(); const game = byId(removeOwnedGame.dataset.removeOwnedGame);
+				if (!user || !game || game.submittedBy !== user.id) return;
+				if (!confirm(`Remove your uploaded game “${game.title}” and its associated reviews?`)) return;
+				deleteGame(game.id); saveData(); renderProfile(); renderArchive();
+			}
+		});
+
+		function renderSession() {
+			const user = currentUser();
+			document.getElementById('sessionStatus').textContent = user ? `Signed in as ${user.name} (${user.type}${user.type === 'guest' && user.course ? ` · ${user.course}` : ''})` : 'Browsing as a visitor';
+			document.querySelectorAll('[data-anon]').forEach(el => { el.hidden = Boolean(user); });
+			document.querySelectorAll('[data-auth]').forEach(el => { el.hidden = !user; });
+			document.querySelectorAll('[data-view="submit"]').forEach(el => { el.hidden = !user || user.type === 'guest'; });
+			document.querySelectorAll('[data-admin]').forEach(el => { el.hidden = user?.type !== 'admin'; });
+			document.getElementById('logoutButton').hidden = !user;
+			renderArchive();
+			renderFeatured();
+		}
+		document.getElementById('logoutButton').addEventListener('click', () => {
+			data.currentUserId = null; saveData(); renderSession(); navigate('home');
+		});
+		function renderFeatured() {
+			const featured = data.games.filter(game => game.approved && game.featured);
+			document.getElementById('featuredGames').innerHTML = featured.length ? featured.map(gameCard).join('') : '<p>No featured games have been published yet.</p>';
+		}
+		function gameCard(game) {
+			const image = game.cover ? `<img src="${escapeHTML(game.cover)}" alt="Cover for ${escapeHTML(game.title)}">` : '<span>Cover image</span>';
+			const reviews = data.reviews.filter(review => review.gameId === game.id);
+			const average = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : '—';
+			const likes = (data.likes || []).filter(item => item.gameId === game.id).length;
+			return `<article class="game-card"><div class="game-card-info"><button type="button" data-open-game="${escapeHTML(game.id)}">${escapeHTML(game.title)}</button><p>${escapeHTML(game.year)} · ${escapeHTML(game.genre)}</p><p>Rating: ${average} · Likes: ${likes}</p></div><div class="game-cover">${image}</div></article>`;
+		}
+		function fillFilters() {
+			const definitions = [['genreFilter', 'genre'], ['yearFilter', 'year'], ['platformFilter', 'platform'], ['engineFilter', 'engine']];
+			definitions.forEach(([id, key]) => {
+				const select = document.getElementById(id); const current = select.value;
+				const values = [...new Set(data.games.filter(game => game.approved).map(game => String(game[key] || '')).filter(Boolean))].sort();
+				select.innerHTML = `<option value="">All ${key === 'year' ? 'years' : `${key}s`}</option>` + values.map(value => `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`).join('');
+				select.value = current;
+			});
+		}
+		function renderArchive() {
+			fillFilters();
+			const query = document.getElementById('searchInput').value.trim().toLowerCase();
+			const genre = document.getElementById('genreFilter').value; const year = document.getElementById('yearFilter').value;
+			const platform = document.getElementById('platformFilter').value; const engine = document.getElementById('engineFilter').value;
+			const sort = document.getElementById('sortFilter').value;
+			const games = data.games.filter(game => game.approved && game.title.toLowerCase().includes(query) && (!genre || game.genre === genre) && (!year || String(game.year) === year) && (!platform || game.platform === platform) && (!engine || game.engine === engine));
+			games.sort((a, b) => {
+				if (sort === 'year') return Number(b.year) - Number(a.year);
+				if (sort === 'rating' || sort === 'likes') {
+					const metric = game => sort === 'likes' ? (data.likes || []).filter(item => item.gameId === game.id).length : data.reviews.filter(item => item.gameId === game.id).reduce((sum, review) => sum + Number(review.rating), 0) / Math.max(1, data.reviews.filter(item => item.gameId === game.id).length);
+					return metric(b) - metric(a);
+				}
+				return a.title.localeCompare(b.title);
+			});
+			document.getElementById('archiveCount').textContent = `${games.length} game${games.length === 1 ? '' : 's'} found.`;
+			document.getElementById('gameList').innerHTML = games.length ? games.map(gameCard).join('') : '<p>No games match these filters.</p>';
+			renderFeatured();
+		}
+		document.getElementById('filterForm').addEventListener('input', renderArchive);
+		document.getElementById('filterForm').addEventListener('change', renderArchive);
+		document.getElementById('filterForm').addEventListener('reset', () => setTimeout(renderArchive));
+
+		function renderGameDetail() {
+			const game = byId(activeGameId); if (!game || !game.approved) { navigate('archive'); return; }
+			const team = (game.team || []).map(member => `<li>${escapeHTML(member.name)} — ${escapeHTML(member.role)}</li>`).join('') || '<li>Team details not provided.</li>';
+			const screenshots = (game.screenshots || []).map((src, index) => `<img src="${escapeHTML(src)}" alt="${escapeHTML(game.title)} screenshot ${index + 1}">`).join('') || '<p>No screenshots added.</p>';
+			const user = currentUser(); const log = user && data.logs.find(item => item.userId === user.id && item.gameId === game.id);
+			const favorite = user && data.favorites.some(item => item.userId === user.id && item.gameId === game.id);
+			const liked = user && (data.likes || []).some(item => item.userId === user.id && item.gameId === game.id);
+			const likeCount = (data.likes || []).filter(item => item.gameId === game.id).length;
+			document.getElementById('gameDetailContent').innerHTML = `
+				<div class="game-detail-layout"><div><h2>${escapeHTML(game.title)}</h2>
+				<p>${escapeHTML(game.description)}</p><dl><dt>Release year</dt><dd>${escapeHTML(game.year)}</dd><dt>Genre</dt><dd>${escapeHTML(game.genre)}</dd><dt>Platform</dt><dd>${escapeHTML(game.platform)}</dd><dt>Engine</dt><dd>${escapeHTML(game.engine)}</dd></dl>
+				<h3>Team</h3><ul>${team}</ul></div><div class="game-detail-side">${user ? `<div class="game-detail-actions"><label for="diaryStatus">Diary <select id="diaryStatus"><option value="">Not logged</option><option value="Played" ${log?.status === 'Played' ? 'selected' : ''}>Played</option><option value="Want to Play" ${log?.status === 'Want to Play' ? 'selected' : ''}>Want to Play</option></select></label><button type="button" id="toggleFavorite" aria-pressed="${Boolean(favorite)}">${favorite ? '★ Saved' : '☆ Favorite'}</button><button type="button" id="toggleLike" class="game-action-like" aria-pressed="${Boolean(liked)}"><span aria-hidden="true">♥</span><span class="game-action-count">${likeCount}</span><span>${liked ? 'Liked' : 'Like'}</span></button></div>` : `<div class="game-detail-actions"><a href="login.html">Log in to like or save this game</a><span class="game-action-count">♥ ${likeCount}</span></div>`}${game.cover ? `<img class="game-detail-cover" src="${escapeHTML(game.cover)}" alt="Cover for ${escapeHTML(game.title)}">` : '<div class="game-detail-cover">[Cover image]</div>'}</div></div>
+				<h3>Screenshots</h3><div class="game-screenshots">${screenshots}</div>
+				<p>This page documents the game; it is not playable on EMC.hive.</p>
+			`;
+			document.getElementById('gameReviews').innerHTML = renderReviews(game.id);
+			document.querySelectorAll('[data-reply-review]').forEach(form => form.addEventListener('submit', event => {
+				event.preventDefault();
+				const replyUser = currentUser();
+				if (!replyUser || (replyUser.id !== game.submittedBy && replyUser.type !== 'admin')) return;
+				const review = data.reviews.find(item => item.id === form.dataset.replyReview && item.gameId === game.id);
+				if (!review) return;
+				review.ownerReply = { userId: replyUser.id, role: replyUser.type === 'admin' ? 'admin' : 'uploader', text: new FormData(form).get('reply').toString().trim(), updatedAt: new Date().toISOString() };
+				saveData(); renderGameDetail();
+			}));
+			if (activeReviewId) requestAnimationFrame(() => document.getElementById(`review-${CSS.escape(activeReviewId)}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+			const container = document.getElementById('reviewFormContainer');
+			document.getElementById('diaryStatus')?.addEventListener('change', event => {
+				data.logs = data.logs.filter(item => !(item.userId === user.id && item.gameId === game.id));
+				if (event.target.value) data.logs.push({ userId: user.id, gameId: game.id, status: event.target.value });
+				if (event.target.value !== 'Played') data.reviews = data.reviews.filter(review => !(review.userId === user.id && review.gameId === game.id));
+				saveData(); renderGameDetail(); renderProfile();
+			});
+			document.getElementById('toggleFavorite')?.addEventListener('click', () => {
+				const index = data.favorites.findIndex(item => item.userId === user.id && item.gameId === game.id);
+				if (index >= 0) data.favorites.splice(index, 1); else data.favorites.push({ userId: user.id, gameId: game.id });
+				saveData(); renderGameDetail(); renderArchive();
+			});
+			document.getElementById('toggleLike')?.addEventListener('click', () => {
+				const index = data.likes.findIndex(item => item.userId === user.id && item.gameId === game.id);
+				if (index >= 0) data.likes.splice(index, 1); else data.likes.push({ userId: user.id, gameId: game.id });
+				saveData(); renderGameDetail(); renderArchive();
+			});
+			document.querySelectorAll('[data-edit-review]').forEach(button => button.addEventListener('click', () => { editingReviewId = button.dataset.editReview; renderGameDetail(); }));
+			document.querySelectorAll('[data-delete-review]').forEach(button => button.addEventListener('click', () => {
+				removeReview(button.dataset.deleteReview); saveData(); renderGameDetail(); renderProfile();
+			}));
+			document.querySelectorAll('[data-moderate-delete-review]').forEach(button => button.addEventListener('click', () => {
+				const review = data.reviews.find(item => item.id === button.dataset.moderateDeleteReview);
+				if (!review || !confirm('Remove this review from the game page?')) return;
+				removeReview(review.id); saveData(); renderGameDetail(); renderProfile();
+			}));
+			document.querySelectorAll('[data-report-review]').forEach(button => button.addEventListener('click', () => {
+				if (!data.reports.some(report => report.reviewId === button.dataset.reportReview && report.userId === (user?.id || 'visitor'))) data.reports.push({ id: uid('report'), reviewId: button.dataset.reportReview, userId: user?.id || 'visitor' });
+				saveData(); alert('Review reported for administrator review.');
+			}));
+			if (!user) { container.innerHTML = '<p><a href="login.html">Log in</a> to rate or review this game. Signed-in users must mark it as Played first.</p>'; return; }
+			if (log?.status !== 'Played') { container.innerHTML = '<p>Mark this game as Played to rate and review it.</p>'; return; }
+			const ownReview = data.reviews.find(review => review.gameId === game.id && review.userId === user.id);
+			const review = ownReview && editingReviewId === ownReview.id ? ownReview : null;
+			container.innerHTML = ownReview && !review ? '<p>You have reviewed this game. Use the Edit button beside your review to update it.</p>' : `<form id="reviewForm"><fieldset><legend>Rating</legend><div class="star-rating" role="radiogroup" aria-label="Choose a rating from 1 to 5 stars">${[5, 4, 3, 2, 1].map(n => `<input id="rating-${n}" type="radio" name="rating" value="${n}" required ${review?.rating === n ? 'checked' : ''}><label for="rating-${n}" title="${n} star${n > 1 ? 's' : ''}" aria-label="${n} star${n > 1 ? 's' : ''}">★</label>`).join('')}</div></fieldset><label>Review <textarea name="text" required maxlength="2000" rows="4">${review ? escapeHTML(review.text) : ''}</textarea></label><button type="submit">${review ? 'Save changes' : 'Post review'}</button>${review ? '<button type="button" id="cancelReviewEdit">Cancel</button>' : ''}</form>`;
+			document.getElementById('editMyReview')?.addEventListener('click', () => { editingReviewId = ownReview.id; renderGameDetail(); });
+			document.getElementById('reviewForm')?.addEventListener('submit', event => {
+				event.preventDefault(); const form = new FormData(event.currentTarget);
+				if (ownReview && editingReviewId !== ownReview.id) { editingReviewId = ownReview.id; renderGameDetail(); return; }
+				if (ownReview) { ownReview.rating = Number(form.get('rating')); ownReview.text = String(form.get('text')).trim(); ownReview.updatedAt = new Date().toISOString(); }
+				else data.reviews.push({ id: uid('review'), gameId: game.id, userId: user.id, rating: Number(form.get('rating')), text: String(form.get('text')).trim(), createdAt: new Date().toISOString() });
+				editingReviewId = null; saveData(); renderGameDetail(); renderArchive();
+			});
+			document.getElementById('cancelReviewEdit')?.addEventListener('click', () => { editingReviewId = null; renderGameDetail(); });
+		}
+		function renderReviews(gameId) {
+			const reviews = data.reviews.filter(review => review.gameId === gameId);
+			if (!reviews.length) return '<p>No reviews yet.</p>';
+			const game = byId(gameId);
+			const viewer = currentUser();
+			const isGameOwner = viewer && game?.submittedBy === viewer.id;
+			const isAdmin = viewer?.type === 'admin';
+			return reviews.map(review => {
+				const author = data.users.find(user => user.id === review.userId);
+				const own = currentUser()?.id === review.userId;
+				const canReplyToReview = (isGameOwner || isAdmin) && !own;
+				const canRemoveReview = !own && (isAdmin || isGameOwner);
+				const ownerReply = review.ownerReply;
+				const role = author?.type || 'guest';
+				const roleName = role === 'admin' ? 'Admin' : role === 'student' ? 'Student' : role === 'alumni' ? 'Alumni' : 'Guest';
+				const roleLabel = role === 'guest' ? `${roleName} · ${escapeHTML(author?.course || 'Course not set')}` : roleName;
+				return `<article id="review-${escapeHTML(review.id)}"><h4>${escapeHTML(author?.name || 'Former member')} <span class="role-badge role-badge-${escapeHTML(role)}">${roleLabel}</span> · ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</h4><p>${escapeHTML(review.text)}</p><p><small>${escapeHTML(new Date(review.updatedAt || review.createdAt).toLocaleDateString())}</small></p>${ownerReply ? `<aside class="owner-reply"><strong>${ownerReply.role === 'admin' ? 'Administrator reply' : 'Reply from the game team'}</strong><p>${escapeHTML(ownerReply.text)}</p></aside>` : ''}${canReplyToReview ? `<form class="owner-reply-form" data-reply-review="${escapeHTML(review.id)}"><label>${isAdmin ? 'Admin reply' : 'Reply as the game team'} <textarea name="reply" rows="2" maxlength="1000" required>${escapeHTML(ownerReply?.text || '')}</textarea></label><button type="submit">${ownerReply ? 'Update reply' : 'Reply to review'}</button></form>` : ''}${own ? `<button type="button" data-edit-review="${escapeHTML(review.id)}">Edit my review</button><button type="button" data-delete-review="${escapeHTML(review.id)}">Delete my review</button>` : ''}${canRemoveReview ? `<button type="button" data-moderate-delete-review="${escapeHTML(review.id)}">${isAdmin ? 'Admin: remove review' : 'Remove review on my game'}</button>` : ''}<button type="button" data-report-review="${escapeHTML(review.id)}">Report review</button></article>`;
+			}).join('');
+		}
+
+		function renderProfile() {
+			const user = currentUser(); if (!user) return;
+			document.getElementById('profileSummary').innerHTML = `<p>${escapeHTML(user.name)} · @${escapeHTML(user.username)} · ${escapeHTML(user.type)}${user.type === 'guest' ? ` · Course: ${escapeHTML(user.course || 'Not set')}` : ''}</p>${user.type === 'guest' ? `<form id="profileCourseForm" class="profile-course-form"><label for="profileCourseInput">Course</label><input id="profileCourseInput" name="course" value="${escapeHTML(user.course || '')}" placeholder="Enter your course" maxlength="100" required><button type="submit">Save course</button></form>` : ''}`;
+			document.getElementById('profileCourseForm')?.addEventListener('submit', event => {
+				event.preventDefault();
+				user.course = String(new FormData(event.currentTarget).get('course')).trim();
+				saveData(); renderSession(); renderProfile();
+			});
+			const logs = data.logs.filter(item => item.userId === user.id);
+			document.getElementById('profileLogs').innerHTML = logs.length ? logs.map(item => `<p><button type="button" data-open-game="${escapeHTML(item.gameId)}">${escapeHTML(byId(item.gameId)?.title || 'Removed game')}</button> — ${escapeHTML(item.status)}</p>`).join('') : '<p>No logged games yet.</p>';
+			const uploadedGames = data.games.filter(game => game.submittedBy === user.id);
+			document.getElementById('profileUploadedGames').innerHTML = uploadedGames.length ? uploadedGames.map(game => `<article class="uploaded-game-card"><div><h4>${escapeHTML(game.title)}</h4><p>${escapeHTML(game.year)} · ${escapeHTML(game.genre)}</p><button type="button" data-open-game="${escapeHTML(game.id)}">View game</button> <button type="button" data-remove-owned-game="${escapeHTML(game.id)}">Remove uploaded game</button></div>${game.cover ? `<img class="uploaded-game-cover" src="${escapeHTML(game.cover)}" alt="Cover for ${escapeHTML(game.title)}">` : '<div class="uploaded-game-cover uploaded-game-placeholder">Cover image</div>'}</article>`).join('') : '<p>You have not uploaded a published game yet.</p>';
+			const favorites = data.favorites.filter(item => item.userId === user.id);
+			document.getElementById('profileFavorites').innerHTML = favorites.length ? favorites.map(item => `<p><button type="button" data-open-game="${escapeHTML(item.gameId)}">${escapeHTML(byId(item.gameId)?.title || 'Removed game')}</button></p>`).join('') : '<p>No favorites yet.</p>';
+			const reviews = data.reviews.filter(item => item.userId === user.id);
+			document.getElementById('profileReviews').innerHTML = reviews.length ? reviews.map(item => `<article><button type="button" data-open-game="${escapeHTML(item.gameId)}">${escapeHTML(byId(item.gameId)?.title || 'Removed game')}</button><p>${'★'.repeat(item.rating)} — ${escapeHTML(item.text)}</p></article>`).join('') : '<p>No reviews yet.</p>';
+		}
+
+		function addTeamInput(containerId = 'teamFields', name = '', role = '') {
+			const row = document.createElement('p'); row.className = 'team-row';
+			row.innerHTML = `<label>Member name <input class="member-name" value="${escapeHTML(name)}" required></label> <label>Role <select class="member-role" required></select></label> <button type="button" class="remove-team">Remove</button>`;
+			setSelectOptions(row.querySelector('.member-role'), TEAM_ROLES, role);
+			row.querySelector('.remove-team').addEventListener('click', () => row.remove());
+			document.getElementById(containerId).append(row);
+		}
+		document.getElementById('addTeamMember').addEventListener('click', () => addTeamInput());
+		addTeamInput();
+		document.getElementById('addAdminTeamMember').addEventListener('click', () => addTeamInput('adminTeamFields'));
+		document.getElementById('submissionForm').addEventListener('submit', async event => {
+			event.preventDefault(); const formElement = event.currentTarget; const user = currentUser(); if (!user || user.type === 'guest') return;
+			const form = new FormData(formElement);
+			const team = [...document.querySelectorAll('#teamFields .team-row')].map(row => ({ name: row.querySelector('.member-name').value.trim(), role: row.querySelector('.member-role').value }));
+			try {
+				const cover = formElement.elements.coverFile.files[0] ? await readImage(formElement.elements.coverFile.files[0]) : '';
+				const screenshots = await Promise.all([...formElement.elements.screenshotFiles.files].map(readImage));
+				const submission = { id: uid('submission'), submittedBy: user.id, submittedAt: new Date().toISOString(), status: 'Pending', remarks: '', contactEmail: form.get('contactEmail'), contactLink: form.get('contactLink'), game: { title: String(form.get('title')).trim(), description: String(form.get('description')).trim(), year: Number(form.get('year')), genre: form.get('genre'), platform: form.get('platform'), engine: form.get('engine'), cover, screenshots, team } };
+				data.submissions.push(submission); saveData(); formElement.reset(); document.getElementById('teamFields').innerHTML = ''; addTeamInput(); document.getElementById('submissionImagePreviews').innerHTML = '';
+				showMessage('submissionMessage', 'Submission sent for administrator review.'); renderMySubmissions();
+			} catch (error) { showMessage('submissionMessage', error.message); }
+		});
+		function renderMySubmissions() {
+			const user = currentUser(); if (!user) return;
+			const submissions = data.submissions.filter(item => item.submittedBy === user.id);
+			document.getElementById('mySubmissions').innerHTML = submissions.length ? submissions.map(item => `<article><h4>${escapeHTML(item.game.title)}</h4><p>Status: ${escapeHTML(item.status)}</p>${item.remarks ? `<p>Administrator remarks: ${escapeHTML(item.remarks)}</p>` : ''}${['Returned', 'Rejected'].includes(item.status) ? `<button type="button" data-resubmit="${escapeHTML(item.id)}">Edit and resubmit</button>` : ''}</article>`).join('') : '<p>You have no submissions yet.</p>';
+			document.querySelectorAll('[data-resubmit]').forEach(button => button.addEventListener('click', () => {
+				const submission = data.submissions.find(item => item.id === button.dataset.resubmit); if (!submission) return;
+				const remarks = prompt(`Administrator remarks: ${submission.remarks}\nUpdate the game description or press Cancel to keep it unchanged:`);
+				if (remarks !== null && remarks.trim()) submission.game.description = remarks.trim();
+				submission.status = 'Pending'; submission.remarks = ''; saveData(); renderMySubmissions();
+			}));
+		}
+
+		function renderAdmin() {
+			const pending = data.submissions.filter(item => ['Pending', 'Returned'].includes(item.status));
+			document.getElementById('adminSubmissions').innerHTML = pending.length ? pending.map(item => `<article><h4>${escapeHTML(item.game.title)} — ${escapeHTML(item.status)}</h4><p>Submitted by ${escapeHTML(data.users.find(user => user.id === item.submittedBy)?.name || 'Unknown')}</p><p>${escapeHTML(item.game.description)}</p><p>Contact: ${escapeHTML(item.contactEmail || 'Not provided')} ${escapeHTML(item.contactLink || '')}</p><label>Remarks <textarea id="remarks-${escapeHTML(item.id)}">${escapeHTML(item.remarks)}</textarea></label><button type="button" data-submission-action="approve" data-id="${escapeHTML(item.id)}">Approve & publish</button> <button type="button" data-submission-action="return" data-id="${escapeHTML(item.id)}">Return with remarks</button> <button type="button" data-submission-action="reject" data-id="${escapeHTML(item.id)}">Reject</button></article>`).join('') : '<p>No submissions awaiting review.</p>';
+			document.querySelectorAll('[data-submission-action]').forEach(button => button.addEventListener('click', () => {
+				const submission = data.submissions.find(item => item.id === button.dataset.id); if (!submission) return;
+				submission.remarks = document.getElementById(`remarks-${submission.id}`).value.trim();
+				if (button.dataset.submissionAction === 'approve') { submission.status = 'Approved'; data.games.push({ ...submission.game, id: uid('game'), approved: true, featured: false, submittedBy: submission.submittedBy }); }
+				if (button.dataset.submissionAction === 'return') { submission.status = 'Returned'; if (!submission.remarks) { alert('Add remarks before returning a submission.'); submission.status = 'Pending'; return; } }
+				if (button.dataset.submissionAction === 'reject') { submission.status = 'Rejected'; if (!submission.remarks) submission.remarks = 'Submission rejected by administrator.'; }
+				saveData(); renderAdmin(); renderArchive();
+			}));
+			document.getElementById('adminGames').innerHTML = data.games.map(game => `<article class="admin-game-row"><div><strong>${escapeHTML(game.title)}</strong><small>${escapeHTML(game.year)} · ${escapeHTML(game.genre)}</small></div><label class="featured-toggle"><input type="checkbox" data-feature-game="${escapeHTML(game.id)}" ${game.featured ? 'checked' : ''}> Featured</label><div class="admin-game-actions"><button type="button" data-admin-view-game="${escapeHTML(game.id)}">View</button> <button type="button" data-edit-game="${escapeHTML(game.id)}">Edit</button> <button type="button" data-remove-game="${escapeHTML(game.id)}">Remove</button></div></article>`).join('') || '<p>No games.</p>';
+			document.querySelectorAll('[data-feature-game]').forEach(toggle => toggle.addEventListener('change', () => {
+				const game = byId(toggle.dataset.featureGame); if (!game) return;
+				game.featured = toggle.checked; saveData(); renderFeatured();
+			}));
+			document.querySelectorAll('[data-edit-game]').forEach(button => button.addEventListener('click', () => openGameEditor(byId(button.dataset.editGame))));
+			document.querySelectorAll('[data-remove-game]').forEach(button => button.addEventListener('click', () => {
+				if (!confirm('Remove this game and its related diary data and reviews?')) return;
+				deleteGame(button.dataset.removeGame); saveData(); renderAdmin(); renderArchive();
+			}));
+			document.getElementById('adminUsers').innerHTML = `<table class="admin-table"><thead><tr><th>Name</th><th>Username</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>${data.users.map(user => {
+				const suspended = user.suspendedUntil && Date.now() < user.suspendedUntil;
+				const status = user.banned ? 'Banned' : suspended ? `Suspended until ${new Date(user.suspendedUntil).toLocaleDateString()}` : user.disabled ? 'Disabled' : 'Active';
+				return `<tr><td>${escapeHTML(user.name)}</td><td>${escapeHTML(user.username)}</td><td>${escapeHTML(user.type)}</td><td>${status}</td><td>${user.type === 'admin' ? 'Administrator account' : `<button type="button" data-suspend-user="${escapeHTML(user.id)}">${suspended ? 'Lift suspension' : 'Suspend 7 days'}</button> <button type="button" data-ban-user="${escapeHTML(user.id)}">${user.banned ? 'Lift ban' : 'Ban'}</button>`}</td></tr>`;
+			}).join('')}</tbody></table>`;
+			document.querySelectorAll('[data-suspend-user]').forEach(button => button.addEventListener('click', () => {
+				const user = data.users.find(item => item.id === button.dataset.suspendUser); if (!user || user.type === 'admin') return;
+				if (user.suspendedUntil && Date.now() < user.suspendedUntil) {
+					user.suspendedUntil = null;
+					user.suspendedBy = null;
+				} else {
+					user.suspendedUntil = Date.now() + 7 * 24 * 60 * 60 * 1000;
+					user.suspendedBy = currentUser()?.id || null;
+				}
+				saveData(); renderAdmin();
+			}));
+			document.querySelectorAll('[data-ban-user]').forEach(button => button.addEventListener('click', () => {
+				const user = data.users.find(item => item.id === button.dataset.banUser); if (!user || user.type === 'admin') return;
+				user.banned = !user.banned;
+				user.bannedBy = user.banned ? (currentUser()?.id || null) : null;
+				saveData(); renderAdmin();
+			}));
+			const reports = data.reports.filter(report => data.reviews.some(review => review.id === report.reviewId));
+			document.getElementById('reportedReviews').innerHTML = reports.length ? reports.map(report => { const review = data.reviews.find(item => item.id === report.reviewId); return `<article><p>${escapeHTML(review.text)}</p><button type="button" data-see-review="${escapeHTML(review.id)}">See review</button><button type="button" data-admin-delete-review="${escapeHTML(review.id)}">Delete review</button><button type="button" data-dismiss-report="${escapeHTML(report.id)}">Dismiss report</button></article>`; }).join('') : '<p>No reported reviews.</p>';
+			document.querySelectorAll('[data-admin-delete-review]').forEach(button => button.addEventListener('click', () => { data.reviews = data.reviews.filter(item => item.id !== button.dataset.adminDeleteReview); data.reports = data.reports.filter(item => item.reviewId !== button.dataset.adminDeleteReview); saveData(); renderAdmin(); }));
+			document.querySelectorAll('[data-dismiss-report]').forEach(button => button.addEventListener('click', () => { data.reports = data.reports.filter(item => item.id !== button.dataset.dismissReport); saveData(); renderAdmin(); }));
+		}
+		document.getElementById('addGameButton').addEventListener('click', () => openGameEditor());
+		function openGameEditor(game) {
+			const form = document.getElementById('gameEditorForm'); form.reset();
+			document.getElementById('gameEditorHeading').textContent = game ? 'Edit game' : 'Add game';
+			form.elements.id.value = game?.id || '';
+			for (const key of ['title', 'description', 'year']) form.elements[key].value = game?.[key] ?? '';
+			form.elements.year.dispatchEvent(new Event('input'));
+			setSelectOptions(form.elements.genre, GENRES, game?.genre || '');
+			setSelectOptions(form.elements.platform, PLATFORMS, game?.platform || '');
+			setSelectOptions(form.elements.engine, ENGINES, game?.engine || '');
+			adminEditorCover = game?.cover || '';
+			adminEditorScreenshots = [...(game?.screenshots || [])];
+			renderAdminPreviews();
+			document.getElementById('adminTeamFields').innerHTML = '';
+			(game?.team || []).forEach(member => addTeamInput('adminTeamFields', member.name, member.role));
+			if (!game?.team?.length) addTeamInput('adminTeamFields');
+			document.getElementById('gameEditor').showModal();
+		}
+		document.getElementById('cancelGameEditor').addEventListener('click', () => document.getElementById('gameEditor').close());
+		document.getElementById('gameEditorForm').addEventListener('submit', async event => {
+			event.preventDefault(); const formElement = event.currentTarget; const form = new FormData(formElement); const id = form.get('id');
+			if (currentUser()?.type !== 'admin') return;
+			try {
+				const uploadedCover = formElement.elements.coverFile.files[0] ? await readImage(formElement.elements.coverFile.files[0]) : adminEditorCover;
+				const uploadedScreenshots = await Promise.all([...formElement.elements.screenshotFiles.files].map(readImage));
+				const team = [...document.querySelectorAll('#adminTeamFields .team-row')].map(row => ({ name: row.querySelector('.member-name').value.trim(), role: row.querySelector('.member-role').value }));
+				const game = { id: id || uid('game'), title: String(form.get('title')).trim(), description: String(form.get('description')).trim(), year: Number(form.get('year')), genre: form.get('genre'), platform: form.get('platform'), engine: form.get('engine'), cover: uploadedCover, screenshots: [...adminEditorScreenshots, ...uploadedScreenshots], team, submittedBy: id ? byId(id)?.submittedBy : currentUser().id, approved: true, featured: false };
+				if (id) Object.assign(byId(id), game); else data.games.push(game);
+				saveData(); document.getElementById('gameEditor').close(); renderAdmin(); renderArchive();
+			} catch (error) { alert(error.message); }
+		});
+
+		window.addEventListener('hashchange', () => {
+			const view = location.hash.slice(1) || 'home';
+			if (view === 'game') navigate('gameDetail'); else if (document.getElementById(view)) navigate(view); else navigate('home');
+		});
+		renderSession();
+		const initialView = location.hash.slice(1);
+		navigate(initialView === 'game' ? 'archive' : (document.getElementById(initialView)?.matches('[data-page]') ? initialView : 'home'));
+	</script>
+</body>
+</html>

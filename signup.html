@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create an EMC.hive account and start your game diary.">
+  <title>Sign up — EMC.hive</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #202820; background: #f5f7f4; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; line-height: 1.6; }
+    header, footer { padding: 1rem max(1.25rem, calc((100% - 1080px) / 2)); background: #fff; }
+    header { border-bottom: 1px solid #dfe5df; }
+    header h1 { margin: 0; font-size: 1.6rem; letter-spacing: -.04em; }
+    header a { color: inherit; text-decoration: none; }
+    main { display: grid; place-items: center; padding: 2rem 1rem; }
+    .auth-card { width: min(100%, 560px); padding: clamp(1.25rem, 4vw, 2rem); background: #fff; border: 1px solid #e1e7e1; border-radius: .65rem; }
+    h2 { margin: 0 0 .4rem; line-height: 1.25; letter-spacing: -.025em; }
+    .intro, footer { color: #667168; }
+    form { display: grid; gap: .9rem; margin-top: 1.5rem; }
+    label { display: grid; gap: .3rem; font-weight: 550; }
+    input, select, button { width: 100%; padding: .65rem .75rem; border: 1px solid #cbd4cb; border-radius: .35rem; font: inherit; }
+    input:focus, select:focus { outline: 2px solid #88b49a; outline-offset: 1px; }
+    button { border-color: #286347; background: #286347; color: white; cursor: pointer; }
+    button:hover { background: #1d5038; }
+    a { color: #286347; }
+    #message { min-height: 1.5rem; }
+    footer { border-top: 1px solid #dfe5df; font-size: .9rem; }
+    @media (min-width: 650px) { form { grid-template-columns: repeat(2, minmax(0, 1fr)); } form button { justify-self: start; width: auto; min-width: 130px; } }
+    :root { --ink: #24152f; --muted: #756780; --green: #7938a6; --green-dark: #57217f; --lime: #f1d8ff; --line: #e9dff0; color: var(--ink); background: #f8f3fb; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: radial-gradient(ellipse at 80% 10%, #eee1f8 0, transparent 30rem), #f8f3fb; }
+    header { padding: .8rem max(1rem, calc((100% - 1120px) / 2)); background: #ffffffeb; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+    header h1 { font-size: 1.5rem; }
+    .brand-logo { width: 2.2rem; height: 2.2rem; margin-right: .45rem; border: 2px solid #e8d8f1; border-radius: .7rem; object-fit: cover; object-position: center 54%; vertical-align: -.55rem; box-shadow: 0 3px 9px #28103620; }
+    main { grid-template-columns: minmax(0, 1fr) minmax(420px, 560px); gap: clamp(1rem, 4vw, 3rem); width: min(100% - 2rem, 1120px); margin: 0 auto; padding: clamp(1.5rem, 4vw, 3rem) 0; }
+    .auth-aside { position: relative; display: flex; min-height: 580px; flex-direction: column; justify-content: flex-end; overflow: hidden; padding: clamp(1.5rem, 4vw, 3rem); border-radius: 1.25rem; background: linear-gradient(145deg, #321447, #7938a6); color: white; }
+    .auth-aside::after { content: ""; position: absolute; inset: 0; background: url("pics/beehive.svg") center right / contain no-repeat; filter: invert(1); opacity: .2; pointer-events: none; }
+    .auth-aside > * { position: relative; z-index: 1; }
+    .auth-aside .eyebrow { color: var(--lime); font-size: .75rem; font-weight: 800; letter-spacing: .16em; }
+    .auth-logo { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 1; width: 92px; height: 92px; border: 3px solid #ffffff5c; border-radius: 1.1rem; object-fit: cover; object-position: center 54%; box-shadow: 0 12px 30px #17052655; transform: rotate(4deg); }
+    .auth-aside h2 { max-width: 430px; margin: .5rem 0 1rem; font-size: clamp(2.4rem, 5vw, 4.2rem); letter-spacing: -.07em; line-height: .98; }
+    .auth-aside p { color: #e1ece1; }
+    .auth-card { width: 100%; align-self: center; padding: clamp(1.4rem, 4vw, 2.4rem); border: 1px solid #e6ebe4; border-radius: 1.1rem; box-shadow: 0 18px 48px #1c36200d; }
+    h2 { letter-spacing: -.045em; }
+    .intro, footer { color: var(--muted); }
+    label { color: #435248; }
+    input, select { min-height: 2.95rem; border-color: #d9e1d9; border-radius: .65rem; background: #fbfcfa; }
+    input:focus, select:focus { outline: none; border-color: #a66ac8; box-shadow: 0 0 0 4px #7938a61c; }
+    button { min-height: 2.9rem; border-color: var(--green); border-radius: .65rem; background: var(--green); font-weight: 700; }
+    button:hover { transform: translateY(-1px); border-color: var(--green-dark); background: var(--green-dark); }
+    a { color: var(--green); }
+    footer { padding: .8rem max(1rem, calc((100% - 1120px) / 2)); background: transparent; }
+    @media (max-width: 950px) { main { grid-template-columns: 1fr; width: min(100% - 1.25rem, 620px); gap: 1rem; } .auth-aside { min-height: 235px; padding: 1.35rem; } .auth-aside h2 { font-size: 2.5rem; } }
+    /* Refined authentication UI */
+    :root { --ink: #271b35; --muted: #746981; --green: #7439a0; --green-dark: #552579; --lime: #f0dcff; --line: #e8def0; }
+    body { color: var(--ink); background: radial-gradient(ellipse at 12% 18%, #eee4f6 0, transparent 26rem), #f7f4fa; }
+    header { position: relative; z-index: 2; padding: .7rem max(1rem, calc((100% - 1360px) / 2)); border-color: #e8e0ec; background: #fffd; box-shadow: 0 5px 25px #32144708; }
+    .brand-logo { width: 2.45rem; height: 2.45rem; border-radius: .8rem; }
+    main { place-items: stretch; grid-template-columns: minmax(0, 1fr) minmax(430px, 570px); gap: clamp(1.1rem, 3vw, 2.5rem); width: min(100% - 2rem, 1180px); padding: clamp(1.5rem, 4vw, 3rem) 0; }
+    .auth-aside { min-height: 620px; padding: clamp(1.5rem, 4vw, 3.25rem); border: 1px solid #ffffff24; border-radius: 1.4rem; background: linear-gradient(145deg, #28103a, #552579 58%, #8146a0); box-shadow: 0 22px 65px #32144728; }
+    .auth-aside::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 85% 16%, #ffffff22, transparent 16rem); pointer-events: none; }
+    .auth-aside::after { opacity: .14; background-size: 86% auto; }
+    .auth-aside .eyebrow { color: #f0dcff; }
+    .auth-logo { width: 104px; height: 104px; border-radius: 1.25rem; box-shadow: 0 15px 40px #17052655; }
+    .auth-aside h2 { max-width: 450px; font-size: clamp(2.8rem, 5vw, 4.5rem); }
+    .auth-aside p { max-width: 36ch; color: #eee3f4; font-size: 1.03rem; }
+    .auth-card { padding: clamp(1.5rem, 3vw, 2.35rem); border-color: #e9e1ee; border-radius: 1.3rem; background: #fff; box-shadow: 0 22px 65px #32144710; }
+    .auth-card h2 { margin-bottom: .35rem; color: #2b1b38; font-size: 2rem; letter-spacing: -.06em; }
+    .intro, footer { color: var(--muted); }
+    label { color: #594d61; font-size: .9rem; font-weight: 700; }
+    input, select { min-height: 3rem; border-color: #e2d9e8; border-radius: .72rem; background: #fdfbfe; }
+    input:focus, select:focus { outline: none; border-color: #a76ac8; box-shadow: 0 0 0 4px #7938a61b; }
+    button { min-height: 3rem; border-color: var(--green); border-radius: .72rem; background: var(--green); box-shadow: 0 6px 16px #7439a022; font-weight: 750; }
+    button:hover { transform: translateY(-1px); border-color: var(--green-dark); background: var(--green-dark); box-shadow: 0 10px 24px #55257930; }
+    a { color: var(--green); font-weight: 650; }
+    #message { padding: .25rem 0; color: #66348a; font-weight: 650; }
+    footer { border-color: #e8e0ec; color: #81748a; }
+    @media (max-width: 950px) { main { place-items: stretch; grid-template-columns: 1fr; width: min(100% - 1.25rem, 650px); gap: 1rem; } .auth-aside { min-height: 260px; } .auth-aside h2 { font-size: 2.8rem; } }
+    @media (max-width: 650px) { form { grid-template-columns: 1fr; } form button { width: 100%; } .auth-aside { min-height: 235px; padding: 1.25rem; border-radius: 1.1rem; } .auth-aside h2 { max-width: 300px; padding-right: 44px; font-size: 2.45rem; } .auth-logo { top: 1rem; right: 1rem; width: 70px; height: 70px; } .auth-card { padding: 1.2rem; border-radius: 1.1rem; } }
+  </style>
+</head>
+<body>
+  <header><h1><a href="index.html"><img class="brand-logo" src="pics/BSEMC.jpg" alt="">EMC.hive</a></h1></header>
+  <main>
+    <aside class="auth-aside"><img class="auth-logo" src="pics/BSEMC.jpg" alt="BSEMC program logo"><span class="eyebrow">BSEMC GAME ARCHIVE</span><h2>Your games. Your memories. Your hive.</h2><p>Join the community to save your play history, share reviews, and discover the work of student game creators.</p></aside>
+    <section class="auth-card" aria-labelledby="pageTitle">
+      <h2 id="pageTitle">Create an account</h2>
+      <p class="intro">Join the community and start your game diary.</p>
+      <form id="signupForm" novalidate>
+        <label>Account type
+          <select name="type" id="accountType" required>
+            <option value="student">Student</option>
+            <option value="alumni">Alumni</option>
+            <option value="guest">Guest / viewer</option>
+          </select>
+        </label>
+        <label>Username <input name="name" required maxlength="100" autocomplete="name"></label>
+        <label id="studentIdField">Student ID <input name="studentId" id="studentId" maxlength="10" pattern="[0-9]{8}-[NS]" placeholder="20230000-N" title="Use STUDENT ID format." autocomplete="username"></label>
+        <label id="courseField" hidden>Course <input name="course" id="course" maxlength="100" placeholder="e.g. BSEMC"></label>
+        <label>Email <input name="email" type="email" required autocomplete="email"></label>
+        <label>Password <input name="password" type="password" required minlength="8" autocomplete="new-password"></label>
+        <button type="submit">Sign up</button>
+      </form>
+      <p id="message" role="status" aria-live="polite"></p>
+      <p>Already have an account? <a href="login.html">Log in</a>.</p>
+      <p><a href="index.html#archive">Browse the Game Archive</a></p>
+    </section>
+  </main>
+  <footer>EMC.hive · BSEMC student-made games archive</footer>
+  <script>
+    'use strict';
+    const STORAGE_KEY = 'emcHivePrototypeV1';
+    const typeSelect = document.getElementById('accountType');
+    const studentId = document.getElementById('studentId');
+    const course = document.getElementById('course');
+    const studentIdPattern = /^[0-9]{8}-[NS]$/;
+    function updateFields() {
+      const guest = typeSelect.value === 'guest';
+      document.getElementById('studentIdField').hidden = guest;
+      studentId.required = !guest;
+      document.getElementById('courseField').hidden = !guest;
+      course.required = guest;
+      if (guest || !studentId.value) studentId.setCustomValidity('');
+      else studentId.setCustomValidity(studentIdPattern.test(studentId.value.trim()) ? '' : 'use STUDENT ID format.');
+    }
+    typeSelect.addEventListener('change', updateFields);
+    studentId.addEventListener('input', updateFields);
+    updateFields();
+    document.getElementById('signupForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const values = new FormData(event.currentTarget);
+      const type = String(values.get('type'));
+      const id = type === 'guest' ? '' : String(values.get('studentId')).trim();
+      if (type !== 'guest' && !studentIdPattern.test(id)) {
+        studentId.setCustomValidity('use STUDENT ID format.');
+        studentId.reportValidity();
+        document.getElementById('message').textContent = 'Student ID format is wrong.';
+        return;
+      }
+      studentId.setCustomValidity('');
+      if (!event.currentTarget.checkValidity()) { event.currentTarget.reportValidity(); return; }
+      const email = String(values.get('email')).trim().toLowerCase();
+      let data;
+      try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { data = null; }
+      const demoUsers = [
+        { id: 'admin-1', name: 'EMC.hive Administrator', username: 'admin', email: 'admin@emc.hive', password: 'admin123', type: 'admin', disabled: false },
+        { id: 'demo-student-1', name: 'Demo Student', username: '20231559-N', studentId: '20231559-N', email: 'student.demo@emchive.local', password: 'Student123!', type: 'student', disabled: false },
+        { id: 'demo-alumni-1', name: 'Demo Alumni', username: '20231560-S', studentId: '20231560-S', email: 'alumni.demo@emchive.local', password: 'Alumni123!', type: 'alumni', disabled: false },
+        { id: 'demo-guest-1', name: 'Demo Guest Viewer', username: 'guest.demo@emchive.local', studentId: '', email: 'guest.demo@emchive.local', course: 'BSEMC', password: 'Guest123!', type: 'guest', disabled: false }
+      ];
+      if (!data || !Array.isArray(data.users)) {
+        data = { users: demoUsers, games: [], submissions: [], logs: [], favorites: [], reviews: [], reports: [], currentUserId: null };
+      }
+      const existingIds = new Set(data.users.map(user => user.id));
+      data.users.push(...demoUsers.filter(user => !existingIds.has(user.id)));
+      for (const [userId, studentId] of [['demo-student-1', '20231559-N'], ['demo-alumni-1', '20231560-S']]) {
+        const demoUser = data.users.find(user => user.id === userId);
+        if (demoUser) { demoUser.studentId = studentId; demoUser.username = studentId; }
+      }
+      if (data.users.some(user => (id && (user.studentId || user.username || '').toLowerCase() === id.toLowerCase()) || (user.email || '').toLowerCase() === email)) {
+        document.getElementById('message').textContent = 'That Student ID or email is already in use.';
+        return;
+      }
+      const user = {
+        id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name: String(values.get('name')).trim(),
+        username: id || email,
+        studentId: id,
+        course: type === 'guest' ? String(values.get('course')).trim() : '',
+        email,
+        password: String(values.get('password')),
+        type,
+        disabled: false
+      };
+      data.users.push(user);
+      data.currentUserId = user.id;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      location.href = 'index.html#home';
+    });
+  </script>
+</body>
+</html>
